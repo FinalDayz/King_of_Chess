@@ -3,25 +3,50 @@ import {StyleSheet, Text, View, Image, TouchableOpacity, GestureResponderEvent} 
 import Chess, {Square} from 'chess.js';
 import {ChessLogic} from "../../models/ChessLogic";
 import {ChessImages} from "../../models/ChessImages";
+import {ChessPlayerInterface} from "../chessPlayers/ChessPlayerInterface";
+import {HumanPlayerInterface} from "../chessPlayers/HumanPlayerInterface";
+import {SquareRenderer} from "../renderers/SquareRenderer";
+import {PieceRenderer} from "../renderers/PieceRenderer";
 
 
 export interface Props {
-    game: ChessLogic
+    game: ChessLogic,
+    whitePlayer: ChessPlayerInterface,
+    blackPlayer: ChessPlayerInterface,
 }
 
 interface State {
-
+    whiteDown: boolean,
+    whitePlayer: ChessPlayerInterface,
+    blackPlayer: ChessPlayerInterface,
+    players: Array<ChessPlayerInterface>,
+    playerTurn: ChessPlayerInterface,
 }
 
 export class ChessDisplay extends React.Component<Props, State> {
     private game: ChessLogic;
-    private readonly whiteDown: boolean;
+    private squareRendered: SquareRenderer;
+    private pieceRenderer: PieceRenderer;
 
-    public constructor(props: Props) {
+    public constructor(props: Props, state: State) {
         super(props);
 
+        this.state = {
+            ...state,
+            whiteDown: false,
+            whitePlayer: props.whitePlayer,
+            blackPlayer: props.blackPlayer,
+            players: [props.whitePlayer, props.blackPlayer],
+            playerTurn: props.whitePlayer,
+        };
+
         this.game = props.game;
-        this.whiteDown = false;
+
+        this.state.whitePlayer.setIsWhite(true);
+        this.state.blackPlayer.setIsWhite(false);
+
+        this.squareRendered = new SquareRenderer(this.game);
+        this.pieceRenderer = new PieceRenderer(this.game)
     }
 
     buildChessSquares(): Array<ReactNode> {
@@ -32,13 +57,14 @@ export class ChessDisplay extends React.Component<Props, State> {
         }
 
         for (let square of this.game.getAllSquares()) {
-            const position = this.game.squareToPosition(square, this.whiteDown);
+            const position = this.game.squareToPosition(square, this.state.whiteDown);
             board[position.x][position.y] = square;
         }
 
         for (const row of board) {
             boardNodes.push(
-                <View style={styles.chessboardRow}>
+                <View style={styles.chessboardRow}
+                      key={board.indexOf(row)}>
                     {this.renderColumn(row, board.indexOf(row))}
                 </View>
             );
@@ -53,23 +79,16 @@ export class ChessDisplay extends React.Component<Props, State> {
         for (const square of column) {
 
             const rowIndex = column.indexOf(square);
-            const piece = this.game.getPiece(square);
-            const image = piece ? ChessImages.chesspieces[piece?.color + '-' + piece?.type] : null;
+
+
 
             squares.push(
                 <TouchableOpacity
-                    onPress={this.pressSquare.bind(this, square)}>
-                    <View key={square} style={[
-                        styles.square,
-                        styles[this.game.isLight(square) ? 'light' : 'dark']
-                    ]}>
-                        {image ? (
-                            <Image source={image} style={styles.pieceImage}/>
-                        ) : null}
+                    onPress={this.pressSquare.bind(this, square)}
+                    key={square}>
+                    {this.squareRendered.render(square, rowIndex, columnIndex)}
+                    {this.pieceRenderer.render(square)}
 
-                        {this.renderSquareCoordinates(columnIndex === 0, true, square)}
-                        {this.renderSquareCoordinates(rowIndex === 7, false, square)}
-                    </View>
                 </TouchableOpacity>
             );
         }
@@ -77,75 +96,38 @@ export class ChessDisplay extends React.Component<Props, State> {
         return squares;
     }
 
-    renderSquareCoordinates(render: boolean, column: boolean, square: Square) {
-        if (render) {
-            const style = column ? styles.columnText : styles.rowText;
-            const text = column ? square[1] : square[0];
-            return (
-                <Text
-                    style={[style, styles[this.game.isLight(square) ? 'darkTxt' : 'lightTxt']]}>
-                    {text}
-                </Text>
-            );
-        }
-    }
-
 
     render() {
-
         let boardNodes = this.buildChessSquares();
 
         return (
-            <View style={styles.chessboard}>
+            <View style={styles.chessboard} onTouchStart={() => this.touchMove}>
                 {boardNodes}
             </View>
         );
     }
 
+    private touchMove(event: any) {
+        console.log(event);
+    }
+
     private pressSquare(square: Square) {
-        // return function (p1: GestureResponderEvent) {
-            console.log(square);
-        // };
+        for(const player of this.state.players) {
+            if(this.state.playerTurn !== player)
+                continue;
+            if('touchedSquare' in player) {
+                (player as HumanPlayerInterface).touchedSquare(square);
+            }
+        }
     }
 }
 
 const styles = StyleSheet.create({
-    rowText: {
-        position: 'absolute',
-        bottom: 0,
-        right: 0,
-    },
-    columnText: {
-        position: 'absolute',
-        left: 0,
-    },
-    pieceImage: {
-        width: 44,
-        height: 44,
-        marginLeft: 3,
-        marginTop: 3,
-    },
     chessboard: {
         flexDirection: 'row',
     },
     chessboardRow: {
         flexDirection: 'column',
     },
-    square: {
-        width: 50,
-        height: 50,
-    },
-    light: {
-        backgroundColor: '#ccc',
-    },
-    dark: {
-        backgroundColor: '#666',
-    },
-    lightTxt: {
-        color: '#FFF',
-    },
-    darkTxt: {
-        color: '#000',
-    }
 });
 
