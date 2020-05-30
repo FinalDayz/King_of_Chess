@@ -5,6 +5,10 @@ import {Move, Square} from "chess.js";
 export class TouchscreenPlayer implements HumanPlayerInterface {
     private isWhite: boolean|null = null;
 
+    setGame(game: ChessLogic) {
+
+    }
+
     makeMove(game: ChessLogic): Promise<Move> {
         return new Promise<Move>((accept, reject) => {
             if(this.isWhite === null) {
@@ -24,6 +28,11 @@ export class TouchscreenPlayer implements HumanPlayerInterface {
     touchedSquare(square: Square) {
         console.log("Pressed " + square);
     };
+
+    touchMoved(position: { x: number; y: number }): void {
+        console.log();
+        // this.
+    }
 
 
 }

@@ -20,7 +20,6 @@ export class SquareRenderer implements ChessRenderer {
                     styles[this.game.isLight(square) ? 'light' : 'dark']
                 ]}>
 
-
                 {this.renderSquareCoordinates(columnIndex === 0, true, square)}
                 {this.renderSquareCoordinates(rowIndex === 7, false, square)}
             </View>

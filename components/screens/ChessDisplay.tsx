@@ -80,8 +80,6 @@ export class ChessDisplay extends React.Component<Props, State> {
 
             const rowIndex = column.indexOf(square);
 
-
-
             squares.push(
                 <TouchableOpacity
                     onPress={this.pressSquare.bind(this, square)}
@@ -101,14 +99,23 @@ export class ChessDisplay extends React.Component<Props, State> {
         let boardNodes = this.buildChessSquares();
 
         return (
-            <View style={styles.chessboard} onTouchStart={() => this.touchMove}>
+            <View style={styles.chessboard}
+                  onTouchMove={(event) => this.touchMove(event)}>
                 {boardNodes}
             </View>
         );
     }
 
-    private touchMove(event: any) {
-        console.log(event);
+    private touchMove(event: GestureResponderEvent) {
+        for(const player of this.state.players) {
+            if(this.state.playerTurn !== player)
+                continue;
+            if('touchedSquare' in player) {
+                (player as HumanPlayerInterface).touchMoved(
+                    {x: event.nativeEvent.pageX, y: event.nativeEvent.pageY}
+                    );
+            }
+        }
     }
 
     private pressSquare(square: Square) {
