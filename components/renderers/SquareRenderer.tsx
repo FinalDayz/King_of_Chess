@@ -1,16 +1,18 @@
 import {ChessLogic} from "../../models/ChessLogic";
 import {ChessRenderer} from "./ChessRenderer";
-import {Square} from "chess.js";
+import {Move, Square} from "chess.js";
 import React, {ReactNode} from "react";
 import {Image, StyleSheet, Text, View} from "react-native";
+import {RenderDecorator} from "./RenderDecorators/RenderDecorator";
 
 export class SquareRenderer implements ChessRenderer {
     game: ChessLogic;
+    private additionalRenderers: {[square: string]: RenderDecorator} = {};
+
 
     constructor(game: ChessLogic) {
         this.game = game;
     }
-
 
     render(square: Square, rowIndex: Number, columnIndex: Number): ReactNode {
         return (
@@ -22,6 +24,9 @@ export class SquareRenderer implements ChessRenderer {
 
                 {this.renderSquareCoordinates(columnIndex === 0, true, square)}
                 {this.renderSquareCoordinates(rowIndex === 7, false, square)}
+                {/*{console.log(this.additionalRenderers.hasOwnProperty(square))}*/}
+                {this.additionalRenderers.hasOwnProperty(square) ?
+                    this.additionalRenderers[square].renderSquare() : null}
             </View>
         );
     }
@@ -37,6 +42,19 @@ export class SquareRenderer implements ChessRenderer {
                 </Text>
             );
         }
+    }
+
+    addTileDecoration(square: Square, renderDecorator: RenderDecorator) {
+        this.additionalRenderers[square] = renderDecorator;
+    }
+
+    removeTileDecoration(square: Square) {
+        delete this.additionalRenderers[square];
+    }
+
+
+    clearDecorators() {
+        this.additionalRenderers = {};
     }
 }
 

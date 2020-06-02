@@ -10,13 +10,18 @@ export interface Props {
 }
 
 interface State {
+    chessLogic: ChessLogic,
 }
-
 
 export class Main extends React.Component<Props, State> {
 
+
     constructor(props: Props, state: State) {
         super(props, state);
+
+        this.state = {
+            chessLogic: new ChessLogic(),
+        };
     }
 
     render() {
@@ -24,9 +29,9 @@ export class Main extends React.Component<Props, State> {
             <View>
                 <Text>Main</Text>
                 <ChessDisplay
-                    game={new ChessLogic()}
-                    blackPlayer={new ComputerChessPlayer()}
-                    whitePlayer={new TouchscreenPlayer()}
+                    game={this.state.chessLogic}
+                    blackPlayer={new ComputerChessPlayer(this.state.chessLogic)}
+                    whitePlayer={new TouchscreenPlayer(this.state.chessLogic)}
                 />
             </View>
         );
