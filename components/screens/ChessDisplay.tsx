@@ -5,7 +5,7 @@ import {
     PanResponder,
     PanResponderInstance, SectionList,
     StyleSheet, Text, TouchableHighlight, TouchableNativeFeedback,
-    TouchableOpacity, TouchableWithoutFeedback, TouchableWithoutFeedbackComponent,
+    TouchableOpacity, TouchableWithoutFeedback, TouchableWithoutFeedbackComponent, UIManager,
     View
 } from 'react-native';
 import {Square} from 'chess.js';
@@ -14,8 +14,8 @@ import {ChessPlayerInterface} from "../chessPlayers/ChessPlayerInterface";
 import {HumanPlayerInterface} from "../chessPlayers/HumanPlayerInterface";
 import {SquareRenderer} from "../renderers/SquareRenderer";
 import {PieceRenderer} from "../renderers/PieceRenderer";
-import {TouchView} from "../TouchView";
-
+import {PositionView} from "../PositionView";
+import {Position} from "../../models/Position";
 
 export interface Props {
     game: ChessLogic,
@@ -36,7 +36,8 @@ export class ChessDisplay extends React.Component<Props, State> {
     private readonly game: ChessLogic;
     private readonly squareRendered: SquareRenderer;
     private readonly pieceRenderer: PieceRenderer;
-    private _panResponder: PanResponderInstance;
+    private boardPosition: undefined | Position;
+    private touchSelectedSquare: Square | null = null;
 
     public constructor(props: Props, state: State) {
         super(props);
@@ -48,7 +49,7 @@ export class ChessDisplay extends React.Component<Props, State> {
             whitePlayer: props.whitePlayer,
             blackPlayer: props.blackPlayer,
             players: [props.whitePlayer, props.blackPlayer],
-            playerTurn: props.whitePlayer,
+            playerTurn: props.whitePlayer
         };
 
         this.game = props.game;
@@ -59,52 +60,38 @@ export class ChessDisplay extends React.Component<Props, State> {
             player.setOwner(this);
         }
 
+        // this.toMove(this.state.playerTurn);
+
         this.squareRendered = new SquareRenderer(this.game);
         this.pieceRenderer = new PieceRenderer(this.game);
-        this._panResponder = PanResponder.create({
-            // Ask to be the responder:
-            onStartShouldSetPanResponder: (evt, gestureState) => true,
-            onStartShouldSetPanResponderCapture: (evt, gestureState) => true,
-            onMoveShouldSetPanResponder: (evt, gestureState) => true,
-            onMoveShouldSetPanResponderCapture: (evt, gestureState) => true,
+    }
 
-            onPanResponderGrant: (evt, gestureState) => {
-                // The gesture has started. Show visual feedback so the user knows
-                // what is happening!
+    componentDidMount(): void {
+        this.toMove(this.state.playerTurn);
+    }
 
-                // gestureState.d{x,y} will be set to zero now
-                console.log("onPanResponderGrant");
-            },
-            onPanResponderMove: (evt, gestureState) => {
-                // The most recent move distance is gestureState.move{X,Y}
-
-                // The accumulated gesture distance since becoming responder is
-                // gestureState.d{x,y}
-                console.log(evt);
-                console.log("onPanResponderMove");
-            },
-            onPanResponderTerminationRequest: (evt, gestureState) => true,
-            onPanResponderRelease: (evt, gestureState) => {
-                // The user has released all touches while this view is the
-                // responder. This typically means a gesture has succeeded
-                console.log("onPanResponderRelease");
-                // console.log(evt);
-                // console.log(evt['_dispatchInstances']);
-
-            },
-            onPanResponderTerminate: (evt, gestureState) => {
-                // Another component has become the responder, so this gesture
-                // should be cancelled
-                console.log("onPanResponderTerminate");
-            },
-            onShouldBlockNativeResponder: (evt, gestureState) => {
-                // Returns whether this component should block native components from becoming the JS
-                // responder. Returns true by default. Is currently only supported on android.
-                console.log("onShouldBlockNativeResponder");
-                return true;
-            }
+    toMove(player: ChessPlayerInterface) {
+        this.setState({
+            playerTurn: player
         });
+        player.makeMove(this.game)
+            .then(move => {
+                this.game.makeMove(move);
+                this.toMove(this.state.whitePlayer === player ?
+                    this.state.blackPlayer : this.state.whitePlayer
+                );
+            });
+    }
 
+    clickToTile(x: number, y: number) {
+        if (this.boardPosition === undefined) {
+            return
+        }
+
+        x = Math.ceil(x / this.boardPosition.width * 8);
+        y = Math.ceil(y / this.boardPosition.height * 8);
+
+        this.touchSelectedSquare = this.game.positionToSquare(x, y, this.state.whiteDown);
     }
 
     buildChessSquares(): Array<ReactNode> {
@@ -123,7 +110,7 @@ export class ChessDisplay extends React.Component<Props, State> {
             boardNodes.push(
                 <View
                     style={styles.chessboardRow}
-                    // pointerEvents={'box-none'}
+                    pointerEvents={'none'}
                     key={board.indexOf(row)}>
                     {this.renderColumn(row, board.indexOf(row))}
                 </View>
@@ -141,21 +128,7 @@ export class ChessDisplay extends React.Component<Props, State> {
             const rowIndex = column.indexOf(square);
 
             squares.push(
-                <View
-                    key={square}
-                    onTouchMove={(event) => {
-                        // console.log("MVD ON " + square);
-                        // event.stopPropagation();
-                        // event.preventDefault();
-                    }}
-                    // onTouchEnd={(event) => {
-                    //     console.log(event);
-                    // }}
-                    // pointerEvents={'box-only'}
-                    // onTouchEndCapture={this.releasedSquare.bind(this, square)}
-                    // onTouchStart={this.pressSquare.bind(this, square)}
-
-                >
+                <View key={square}>
                     <TouchableOpacity>
 
                         {this.squareRendered.render(square, rowIndex, columnIndex)}
@@ -173,19 +146,21 @@ export class ChessDisplay extends React.Component<Props, State> {
         let boardNodes = this.buildChessSquares();
 
         return (
-            <View style={styles.chessboard}
-
+            <PositionView style={styles.chessboard}
                   onTouchMove={(event) => {
-                      // console.log(event);
-
+                      this.clickToTile(event.nativeEvent.locationX, event.nativeEvent.locationY);
                   }}
-                  {...this._panResponder.panHandlers}
-                // onTouchEndCapture={(event) => {console.log(event)}}
-                // onTouchStart={(event) => {console.log(event)}}
-                //   onTouchMove={(event) => this.touchMove(event)}
-            >
+                  onTouchEnd={this.releasedSquare.bind(this)}
+                  onTouchStart={(event) => {
+                      this.clickToTile(event.nativeEvent.locationX, event.nativeEvent.locationY);
+                      this.pressSquare();
+                  }}
+
+                  positionFeedback={(pos) => {
+                      this.boardPosition = pos
+                  }}>
                 {boardNodes}
-            </View>
+            </PositionView>
         );
     }
 
@@ -201,20 +176,23 @@ export class ChessDisplay extends React.Component<Props, State> {
         }
     }
 
-    private releasedSquare(square: Square) {
-        this.interactSquare(square, true);
+    private releasedSquare() {
+        this.interactSquare(true);
+        this.touchSelectedSquare = null;
     }
 
-    private pressSquare(square: Square) {
-        this.interactSquare(square, false);
+    private pressSquare() {
+        this.interactSquare(false);
     }
 
-    private interactSquare(square: Square, released: boolean) {
+    private interactSquare(released: boolean) {
+
         for (const player of this.state.players) {
-            if (this.state.playerTurn !== player)
+
+            if (this.state.playerTurn !== player || this.touchSelectedSquare === null)
                 continue;
             if ('touchedSquare' in player) {
-                (player as HumanPlayerInterface).touchedSquare(square, released);
+                (player as HumanPlayerInterface).touchedSquare(this.touchSelectedSquare, released);
             }
         }
     }

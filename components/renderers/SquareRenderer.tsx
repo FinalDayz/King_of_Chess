@@ -24,7 +24,6 @@ export class SquareRenderer implements ChessRenderer {
 
                 {this.renderSquareCoordinates(columnIndex === 0, true, square)}
                 {this.renderSquareCoordinates(rowIndex === 7, false, square)}
-                {/*{console.log(this.additionalRenderers.hasOwnProperty(square))}*/}
                 {this.additionalRenderers.hasOwnProperty(square) ?
                     this.additionalRenderers[square].renderSquare() : null}
             </View>

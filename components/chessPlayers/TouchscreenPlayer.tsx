@@ -16,6 +16,11 @@ export class TouchscreenPlayer implements HumanPlayerInterface {
 
     constructor(game: ChessLogic) {
         this.game = game;
+        var stockfish =
+            require("./../../node_modules/stockfish/src/stockfish.js");
+
+        //components/chessPlayers/TouchscreenPlayer.tsx
+//      .\..\..\node_modules\stockfish\src\stockfish.js
     }
 
     setOwner(owner: ChessDisplay) {
@@ -30,7 +35,6 @@ export class TouchscreenPlayer implements HumanPlayerInterface {
 
             const move = game.getMoves()[0];
             this.moveCallback = accept;
-            // accept(move);
         });
     };
 
@@ -38,28 +42,33 @@ export class TouchscreenPlayer implements HumanPlayerInterface {
         this.isWhite = isWhite;
     };
 
-    movedPiece(move: Move) {
-        console.log(this.moveCallback);
+    executeMove(move: Move) {
         if(this.moveCallback !== null){
             this.moveCallback(move);
         }
     }
 
-    touchedSquare(square: Square, released: boolean) {
-        console.log("Pressed " + square+" " + released);
+    makeMoveIfValid(square: Square): boolean {
+        for(const move of this.visibleMoves) {
+            if(move.to === square) {
+                this.executeMove(move);
+                this.clearVisibleMoves();
+                return true;
+            }
+        }
+        return false
+    }
 
+    touchedSquare(square: Square, released: boolean) {
         if(released) {
             if(this.pressedSquare != null) {
-
-
-                for(const move of this.visibleMoves) {
-                    console.log(square+" === " + move.to);
-                    if(move.to === square) {
-                        this.movedPiece(move);
-                    }
-                }
+                this.makeMoveIfValid(square);
             }
         } else {
+
+            if(this.makeMoveIfValid(square))
+                return;
+
             this.pressedSquare = square;
             this.visibleMoves = this.game.getMoves(this.pressedSquare);
             this.owner.getSquareRendered().clearDecorators();
@@ -85,5 +94,9 @@ export class TouchscreenPlayer implements HumanPlayerInterface {
         // this.
     }
 
-
+    clearVisibleMoves() {
+        this.visibleMoves = [];
+        this.owner.getSquareRendered().clearDecorators();
+        this.owner.forceUpdate();
+    }
 }

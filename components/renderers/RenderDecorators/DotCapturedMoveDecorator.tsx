@@ -21,10 +21,9 @@ const styles = StyleSheet.create({
     },
     dot: {
         backgroundColor: 'red',
-        width: '70%',
-        height: '70%',
-        borderRadius: 100,
-        opacity: .5,
+        width: '100%',
+        height: '100%',
+        opacity: .4,
         position: 'absolute',
     }
 });

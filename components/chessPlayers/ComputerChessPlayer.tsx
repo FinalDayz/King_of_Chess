@@ -17,7 +17,6 @@ export class ComputerChessPlayer implements ChessPlayerInterface {
             if(this.isWhite === null) {
                 reject("setIsWhite function must be called first");
             }
-
             const move = game.getMoves()[0];
 
             accept(move);
