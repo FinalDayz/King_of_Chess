@@ -16,11 +16,6 @@ export class TouchscreenPlayer implements HumanPlayerInterface {
 
     constructor(game: ChessLogic) {
         this.game = game;
-        var stockfish =
-            require("./../../node_modules/stockfish/src/stockfish.js");
-
-        //components/chessPlayers/TouchscreenPlayer.tsx
-//      .\..\..\node_modules\stockfish\src\stockfish.js
     }
 
     setOwner(owner: ChessDisplay) {
