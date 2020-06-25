@@ -9,6 +9,10 @@ export class ChessLogic {
 
     }
 
+    getFen() {
+        return this.game.fen();
+    }
+
     hasEnded()
     {
         return this.game.game_over();
