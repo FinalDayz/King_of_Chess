@@ -2,14 +2,21 @@ import {ChessPlayerInterface} from "./ChessPlayerInterface";
 import {ChessLogic} from "../../models/ChessLogic";
 import {Move} from "chess.js";
 import {ChessDisplay} from "../screens/ChessDisplay";
+import {ChessAnalyser} from "../../models/ChessAnalyser";
+import {Alert} from "react-native";
 
 export class ComputerChessPlayer implements ChessPlayerInterface {
     private isWhite: boolean|null = null;
     game: ChessLogic;
     private owner!: ChessDisplay;
+    private moveCallback: (move: Move) => void;
+    private difficulty: number;
 
-    constructor(game: ChessLogic) {
+
+    constructor(game: ChessLogic, difficulty: number) {
         this.game = game;
+        this.moveCallback = () => {};
+        this.difficulty = difficulty;
     }
 
     makeMove(game: ChessLogic): Promise<Move> {
@@ -17,9 +24,20 @@ export class ComputerChessPlayer implements ChessPlayerInterface {
             if(this.isWhite === null) {
                 reject("setIsWhite function must be called first");
             }
-            const move = game.getMoves()[0];
 
-            accept(move);
+
+            game.chessAnalyser.analysePosition(this.game, this.difficulty)
+                .then(result => {
+                    const move = this.game.getMoveFromPositions(result.move);
+                    if(move)
+                        this.moveCallback(move);
+                    else
+                        console.error("Move is not found?!")
+                }).catch(error => {
+                Alert.alert("Error", "Unknown error occurred");
+            });
+
+            this.moveCallback = accept;
         });
     };
 

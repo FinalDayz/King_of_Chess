@@ -27,10 +27,9 @@ export class Main extends React.Component<Props, State> {
     render() {
         return (
             <View>
-                <Text>Main</Text>
                 <ChessDisplay
                     game={this.state.chessLogic}
-                    blackPlayer={new ComputerChessPlayer(this.state.chessLogic)}
+                    blackPlayer={new ComputerChessPlayer(this.state.chessLogic, 10)}
                     whitePlayer={new TouchscreenPlayer(this.state.chessLogic)}
                 />
             </View>
