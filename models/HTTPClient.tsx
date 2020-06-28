@@ -10,7 +10,7 @@ export class HTTPClient {
 
     static getRequest(
         path: string,
-        pathParams?: Array<string>
+        pathParams?: Array<string|number>
     ): Promise<any> {
         const url = this.buildURL(path, pathParams);
 
@@ -24,7 +24,7 @@ export class HTTPClient {
     static postRequest(
         path: string,
         data: any,
-        pathParams?: Array<string>
+        pathParams?: Array<string|number>
     ): Promise<any> {
         const url = this.buildURL(path, pathParams);
 
@@ -36,7 +36,7 @@ export class HTTPClient {
         ).then((response) => response.json());
     }
 
-    private static buildURL(path: string, pathParams?: Array<string>): string {
+    private static buildURL(path: string, pathParams?: Array<string|number>): string {
         if(path[0] !== '/') {
             path = '/' + path;
         }

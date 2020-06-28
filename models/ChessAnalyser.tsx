@@ -5,11 +5,16 @@ import {Analysis} from "./Analysis";
 export class ChessAnalyser {
 
     analysePosition(
-        chessGame: ChessLogic
+        chessGame: ChessLogic,
+        difficulty?: number
     ): Promise<Analysis|{error: string}|any> {
         const fen = chessGame.getFen();
         return new Promise<{}>((accept, reject) => {
-            HTTPClient.getRequest("/analyse", [fen])
+            const params: Array<string|number> = [fen];
+            if(difficulty) {
+                params.push(difficulty);
+            }
+            HTTPClient.getRequest("/analyse", params)
                 .then(json => {
                     console.log(json);
                     if(json.error) {

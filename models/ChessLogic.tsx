@@ -10,11 +10,23 @@ export class ChessLogic {
     chessAnalyser: ChessAnalyser;
     private currentAnalysisInfo: undefined |
         { fen: string, analysis: Analysis};
+    private moveCallbacks: Array<(move: Move) => void> = [];
 
     constructor() {
         this.game = Chess.Chess();
         this.chessAnalyser = new ChessAnalyser();
     }
+
+    addMoveCallback(callback: (move: Move) => void) {
+        this.moveCallbacks.push(callback);
+    }
+
+    private executeCallbacks(move: Move) {
+        for(const callback of this.moveCallbacks) {
+            callback(move);
+        }
+    }
+
 
     getFen() {
         return this.game.fen();
@@ -79,7 +91,10 @@ export class ChessLogic {
     }
 
     makeMove(move: Move): Move | null {
-        return this.game.move(move);
+        const madeMove = this.game.move(move);
+        if(madeMove)
+            this.executeCallbacks(madeMove);
+        return madeMove;
     }
 
     getMoveFromPositions(moveStr: string): Move | null {
@@ -94,7 +109,6 @@ export class ChessLogic {
     undo() {
         this.game.undo();
     }
-
 
     getCurrentAnalysis(): Promise<Analysis> {
         return new Promise<Analysis>((accept, reject) => {
