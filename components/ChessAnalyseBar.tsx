@@ -6,7 +6,9 @@ interface Props {
 }
 
 interface State {
-    whiteAdvantage: number
+    whiteAdvantage: number,
+    whiteWidth: number,
+    blackWidth: number,
 }
 
 export class ChessAnalyseBar extends React.Component<Props, State>{
@@ -15,14 +17,16 @@ export class ChessAnalyseBar extends React.Component<Props, State>{
         this.state = {
             ...state,
             whiteAdvantage: 0,
+            whiteWidth: 50,
+            blackWidth: 50,
         };
     }
 
     render() {
         return (
-            <View>
-                <View style={styles.white}></View>
-                <View style={styles.black}></View>
+            <View style={styles.wrapper}>
+                <View style={[styles.block, styles.white, {flex: this.state.whiteWidth}]}/>
+                <View style={[styles.block, styles.black, {flex: this.state.blackWidth}]}/>
             </View>
         );
     }
@@ -30,9 +34,15 @@ export class ChessAnalyseBar extends React.Component<Props, State>{
 
 const styles = StyleSheet.create({
     white: {
-        backgroundColor: 'white',
+        backgroundColor: 'grey',
     },
     black: {
         backgroundColor: 'black',
     },
-})
+    wrapper: {
+        flexDirection: 'row'
+    },
+    block: {
+        height: 20,
+    }
+});

@@ -5,6 +5,7 @@ import {ChessLogic} from "../models/ChessLogic";
 import {ChessDisplay} from "./screens/ChessDisplay";
 import {ComputerChessPlayer} from "./chessPlayers/ComputerChessPlayer";
 import {TouchscreenPlayer} from "./chessPlayers/TouchscreenPlayer";
+import {ChessAnalyseBar} from "./ChessAnalyseBar";
 
 export interface Props {
 }
@@ -27,6 +28,7 @@ export class Main extends React.Component<Props, State> {
     render() {
         return (
             <View>
+                <ChessAnalyseBar/>
                 <ChessDisplay
                     game={this.state.chessLogic}
                     blackPlayer={new ComputerChessPlayer(this.state.chessLogic, 10)}
