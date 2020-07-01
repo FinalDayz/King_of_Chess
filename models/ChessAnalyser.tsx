@@ -20,7 +20,10 @@ export class ChessAnalyser {
                     if(json.error) {
                         reject(json);
                     }
-                    accept(json);
+                    accept({
+                        ...json,
+                        isWhite: chessGame.isWhiteTurn()
+                    });
                 })
                 .catch(error => {
                     console.error(error);
