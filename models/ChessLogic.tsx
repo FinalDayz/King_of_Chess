@@ -1,7 +1,7 @@
 import Chess, {ChessInstance, Move, Piece, Square} from 'chess.js';
 import {ChessAnalyser} from "./ChessAnalyser";
 import {Analysis} from "./Analysis";
-
+import {Observable, Observer, Subscriber, Subscription} from "rxjs";
 
 
 export class ChessLogic {
@@ -10,23 +10,25 @@ export class ChessLogic {
     chessAnalyser: ChessAnalyser;
     private currentAnalysisInfo: undefined |
         { fen: string, analysis: Analysis};
-    private moveCallbacks: Array<(move: Move) => void> = [];
+
+    private moveSubscribable: Observable<Move>;
+    private observable?: Subscriber<Move>;
 
     constructor() {
         this.game = Chess.Chess();
         this.chessAnalyser = new ChessAnalyser();
+        this.moveSubscribable = new Observable<Move>(subscriber => {
+            this.observable = subscriber;
+        });
     }
 
-    addMoveCallback(callback: (move: Move) => void) {
-        this.moveCallbacks.push(callback);
+    subscribe(moveCallback: (move: Move) => void): Subscription {
+        return this.moveSubscribable.subscribe(moveCallback);
     }
 
     private executeCallbacks(move: Move) {
-        for(const callback of this.moveCallbacks) {
-            callback(move);
-        }
+        this.observable?.next(move);
     }
-
 
     getFen() {
         return this.game.fen();
@@ -116,6 +118,10 @@ export class ChessLogic {
                 accept(this.currentAnalysisInfo.analysis);
             }
             this.chessAnalyser.analysePosition(this).then(analysis => {
+                console.log(this.game.ascii());
+                console.log(this.game.history());
+                console.log(this.game.fen());
+                console.log(this.getFen());
                 if(analysis.error) {
                     reject(analysis);
                 }

@@ -1,11 +1,12 @@
 import React from "react";
-import {StyleSheet, View} from "react-native";
 import {ChessLogic} from "../models/ChessLogic";
 import {Move} from "chess.js";
 import {Analysis} from "../models/Analysis";
+import {StyleSheet, View, Text} from "react-native";
+import {Observer, Subscribable, Subscription} from "rxjs";
 
 interface Props {
-    game: ChessLogic
+    game: ChessLogic,
 }
 
 interface State {
@@ -16,8 +17,12 @@ interface State {
 }
 
 export class ChessAnalyseBar extends React.Component<Props, State> {
+    private _mounted: boolean;
+    private subscription?: Subscription;
+
     constructor(props: Props, state: State) {
         super(props, state);
+        this._mounted = false;
         this.state = {
             ...state,
             whiteAdvantage: 0,
@@ -25,37 +30,60 @@ export class ChessAnalyseBar extends React.Component<Props, State> {
             blackWidth: 50,
         };
 
-        this.props.game.addMoveCallback(this.madeMove)
     }
 
     madeMove(move: Move) {
         this.props.game.getCurrentAnalysis()
             .then(analysis => {
-                this.setState({
-                    analysis: analysis
-                });
+                if(this._mounted) {
+                    this.setState({
+                        analysis: analysis
+                    });
+                }
             });
+    }
 
+    componentDidMount() {
+        this.subscription = this.props.game.subscribe((move) => {
+            this.madeMove(move);
+        });
+        this._mounted = true;
+    }
+
+    componentWillUnmount() {
+        this.subscription?.unsubscribe();
+        this._mounted = false;
     }
 
     centiPawnToPercent(centiPawn: number): number {
         const isNegative = centiPawn < 0;
         centiPawn = Math.abs(centiPawn);
-
-        return 50;
+        let score = 1000-1000/(centiPawn+1000.0)*1000;
+        if(isNegative)
+            score = -score;
+        return score/10;
     }
 
     render() {
-        let whiteArea = 50;
+
+        let whiteAdvantage = 0;
+        let whiteCpAdvantage = 0;
         const analysis = this.state.analysis;
-        if(analysis && analysis.cp)
-            whiteArea = this.centiPawnToPercent(
-                analysis.isWhite ? analysis.cp : -analysis.cp
-            );
+        if(analysis && analysis.cp) {
+            whiteCpAdvantage = analysis.isWhite ? analysis.cp : -analysis.cp;
+            whiteAdvantage = this.centiPawnToPercent(whiteCpAdvantage);
+        }
+
+        // console.log("ANALYSE... white advantage " + whiteAdvantage);
+        const blackAdvantage = -whiteAdvantage;
         return (
             <View style={styles.wrapper}>
-                <View style={[styles.block, styles.white, {flex: this.state.whiteWidth}]}/>
-                <View style={[styles.block, styles.black, {flex: this.state.blackWidth}]}/>
+                <View style={[styles.block, styles.white, {flex: (200 - whiteAdvantage)}]}>
+                    <Text>{whiteCpAdvantage/100}</Text>
+                </View>
+                <View style={[styles.block, styles.black, {flex: (200 - blackAdvantage)}]}>
+                    <Text style={{color: 'white', textAlign: 'right'}}>{-whiteCpAdvantage/100}</Text>
+                </View>
             </View>
         );
     }
@@ -63,12 +91,14 @@ export class ChessAnalyseBar extends React.Component<Props, State> {
 
 const styles = StyleSheet.create({
     white: {
-        backgroundColor: 'grey',
+        backgroundColor: '#BBB',
     },
     black: {
-        backgroundColor: 'black',
+        backgroundColor: '#333',
     },
     wrapper: {
+        borderColor: '#888',
+        borderWidth: 2,
         flexDirection: 'row'
     },
     block: {

@@ -16,7 +16,6 @@ export class ChessAnalyser {
             }
             HTTPClient.getRequest("/analyse", params)
                 .then(json => {
-                    console.log(json);
                     if(json.error) {
                         reject(json);
                     }

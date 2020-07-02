@@ -1,11 +1,14 @@
+import ENV from '../.env'
+
 export class HTTPClient {
 
-    private static SERVER_URL = 'http://192.168.2.146:8080';
+    private static SERVER_URL = "http://" + ENV.SERVER_URL;//'http://192.168.2.146:8080';
     private static DEFAULT_OPTIONS = {
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json'
         },
+        timeout: 5000,
     };
 
     static getRequest(
@@ -45,6 +48,7 @@ export class HTTPClient {
             for (const param of pathParams) {
                 url += "/" + encodeURIComponent(param);
             }
+        // console.log("Sending request to URL: " + url);
         return url;
     }
 }

@@ -14,8 +14,8 @@ import {ChessPlayerInterface} from "../chessPlayers/ChessPlayerInterface";
 import {HumanPlayerInterface} from "../chessPlayers/HumanPlayerInterface";
 import {SquareRenderer} from "../renderers/SquareRenderer";
 import {PieceRenderer} from "../renderers/PieceRenderer";
-import {PositionView} from "../PositionView";
 import {Position} from "../../models/Position";
+import {PositionView} from "../PositionView";
 
 export interface Props {
     game: ChessLogic,

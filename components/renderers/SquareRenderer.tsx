@@ -65,10 +65,10 @@ const styles = StyleSheet.create({
         color: '#000',
     },
     light: {
-        backgroundColor: '#ccc',
+        backgroundColor: '#F0D9B5',
     },
     dark: {
-        backgroundColor: '#666',
+        backgroundColor: '#B58863',
     },
     rowText: {
         position: 'absolute',

@@ -21,14 +21,24 @@ export class Main extends React.Component<Props, State> {
         super(props, state);
 
         this.state = {
-            chessLogic: new ChessLogic(),
+            ...state
         };
     }
 
+    componentDidMount(): void {
+        this.setState(  {
+            chessLogic: new ChessLogic(),
+        });
+    }
+
     render() {
+        if(!this.state.chessLogic) {
+            return (null);
+        }
         return (
             <View>
-                <ChessAnalyseBar/>
+
+                <ChessAnalyseBar game={this.state.chessLogic}/>
                 <ChessDisplay
                     game={this.state.chessLogic}
                     blackPlayer={new ComputerChessPlayer(this.state.chessLogic, 10)}

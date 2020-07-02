@@ -25,7 +25,6 @@ export class ComputerChessPlayer implements ChessPlayerInterface {
                 reject("setIsWhite function must be called first");
             }
 
-
             game.chessAnalyser.analysePosition(this.game, this.difficulty)
                 .then(result => {
                     const move = this.game.getMoveFromPositions(result.move);

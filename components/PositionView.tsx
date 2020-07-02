@@ -1,13 +1,14 @@
-import React, {Component} from "react";
-import {LayoutChangeEvent, View, ViewProps} from "react-native";
+
 import {Position} from "../models/Position";
+import React from "react";
+import {LayoutChangeEvent, View, ViewProps} from "react-native";
 
 
-interface Props extends ViewProps{
+interface Props extends ViewProps {
     positionFeedback: (pos: Position) => void;
 }
 
-export class PositionView extends Component<Props> {
+export class PositionView extends React.Component<Props> {
 
     private positionView: any;
     private position: null|Position = null;
