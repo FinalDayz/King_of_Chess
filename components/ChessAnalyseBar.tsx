@@ -78,10 +78,10 @@ export class ChessAnalyseBar extends React.Component<Props, State> {
         const blackAdvantage = -whiteAdvantage;
         return (
             <View style={styles.wrapper}>
-                <View style={[styles.block, styles.white, {flex: (200 - whiteAdvantage)}]}>
+                <View style={[styles.block, styles.white, {flex: (150 - whiteAdvantage)}]}>
                     <Text>{whiteCpAdvantage/100}</Text>
                 </View>
-                <View style={[styles.block, styles.black, {flex: (200 - blackAdvantage)}]}>
+                <View style={[styles.block, styles.black, {flex: (150 - blackAdvantage)}]}>
                     <Text style={{color: 'white', textAlign: 'right'}}>{-whiteCpAdvantage/100}</Text>
                 </View>
             </View>

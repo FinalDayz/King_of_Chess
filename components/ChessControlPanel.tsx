@@ -1,6 +1,7 @@
 import React from "react";
 import {ChessLogic} from "../models/ChessLogic";
 import {Analysis} from "../models/Analysis";
+import {Button, StyleSheet, View, Text, TouchableOpacity} from "react-native";
 
 
 interface Props {
@@ -10,6 +11,49 @@ interface Props {
 interface State {
 }
 
-export class chessControlPanel extends React.Component<Props, State> {
+export class ChessControlPanel extends React.Component<Props, State> {
+
+    constructor(props: Props, state: State) {
+        super(props);
+
+        this.state = {
+            ...state,
+        };
+    }
+
+    render() {
+        return (
+            <View style={styles.wrapper}>
+                <TouchableOpacity style={styles.controlButtonWrapper} onPress={() => this.props.game.undo()}>
+                    <Text style={styles.controlButton}>{'<'}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.controlButtonWrapper}>
+                    <Text style={styles.controlButton}>{'>'}</Text>
+                </TouchableOpacity>
+
+            </View>
+        );
+    }
 
 }
+
+const styles = StyleSheet.create({
+    controlButtonWrapper: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#b56100',
+        width: 50,
+        height: 40,
+        borderColor: 'black',
+        borderWidth: 2,
+        margin: 1,
+    },
+    controlButton: {
+        justifyContent:'center',
+        fontSize: 30,
+
+    },
+    wrapper: {
+        flexDirection: 'row',
+    },
+});

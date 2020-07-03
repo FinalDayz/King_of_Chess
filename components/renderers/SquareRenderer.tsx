@@ -15,11 +15,27 @@ export class SquareRenderer implements ChessRenderer {
     }
 
     render(square: Square, rowIndex: Number, columnIndex: Number): ReactNode {
+        const piece = this.game.getPiece(square);
+
+        const toSquare =  this.game.getLastMove()?.from == square;
+        const fromSquare = this.game.getLastMove()?.to == square;
+        const isKingAndCheckOrMate = this.game.isInCheckOrMate() &&
+                piece?.type === 'k' && piece.color === (this.game.isWhiteTurn() ? 'w' : 'b');
+
+
+        let colorStyle = this.game.isLight(square) ? styles.light : styles.dark;
+        if(toSquare)
+            colorStyle = styles.toMovedSquare;
+        if(fromSquare)
+            colorStyle = styles.fromMovedSquare;
+        if(isKingAndCheckOrMate)
+            colorStyle = this.game.isInCheck(false) ? styles.check : styles.checkMate;
+
         return (
             <View
                 style={[
                     styles.square,
-                    styles[this.game.isLight(square) ? 'light' : 'dark']
+                    colorStyle
                 ]}>
 
                 {this.renderSquareCoordinates(columnIndex === 0, true, square)}
@@ -58,6 +74,18 @@ export class SquareRenderer implements ChessRenderer {
 }
 
 const styles = StyleSheet.create({
+    check: {
+        backgroundColor: '#C04242',
+    },
+    checkMate: {
+        backgroundColor: '#FF4242',
+    },
+    toMovedSquare: {
+        backgroundColor : '#eaec76',
+    },
+    fromMovedSquare: {
+        backgroundColor : '#d1d37d',
+    },
     lightTxt: {
         color: '#FFF',
     },

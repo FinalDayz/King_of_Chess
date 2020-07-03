@@ -13,6 +13,7 @@ export class ChessLogic {
 
     private moveSubscribable: Observable<Move>;
     private observable?: Subscriber<Move>;
+    private lastMove: Move|undefined;
 
     constructor() {
         this.game = Chess.Chess();
@@ -94,8 +95,10 @@ export class ChessLogic {
 
     makeMove(move: Move): Move | null {
         const madeMove = this.game.move(move);
-        if(madeMove)
+        if(madeMove) {
             this.executeCallbacks(madeMove);
+            this.lastMove = madeMove;
+        }
         return madeMove;
     }
 
@@ -137,5 +140,23 @@ export class ChessLogic {
 
         });
 
+    }
+
+    isInCheck(mate?: boolean) {
+        return mate ?
+            this.game.in_checkmate() :
+            this.game.in_check();
+    }
+
+    isInCheckOrMate() {
+        return this.isInCheck(true) || this.isInCheck(false);
+    }
+
+    getHistory(): Move[] {
+        return this.game.history({verbose: true})
+    }
+
+    getLastMove(): Move|undefined {
+        return this.lastMove;
     }
 }
