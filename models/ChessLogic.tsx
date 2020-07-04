@@ -15,16 +15,29 @@ export class ChessLogic {
     private observable?: Subscriber<Move>;
     private lastMove: Move|undefined;
 
+    private updateDisplay?: Subscriber<null>;
+    private updateDisplayObservable: Observable<null>;
+
+    private undoHistory: Move[];
+
     constructor() {
         this.game = Chess.Chess();
         this.chessAnalyser = new ChessAnalyser();
         this.moveSubscribable = new Observable<Move>(subscriber => {
             this.observable = subscriber;
         });
+        this.updateDisplayObservable = new Observable<null>(subscriber => {
+            this.updateDisplay = subscriber;
+        });
+        this.undoHistory = [];
     }
 
-    subscribe(moveCallback: (move: Move) => void): Subscription {
+    subscribeToMove(moveCallback: (move: Move) => void): Subscription {
         return this.moveSubscribable.subscribe(moveCallback);
+    }
+
+    subscribeToView(moveCallback: () => void): Subscription {
+        return this.updateDisplayObservable.subscribe(moveCallback);
     }
 
     private executeCallbacks(move: Move) {
@@ -93,9 +106,11 @@ export class ChessLogic {
         return this.game.turn() === "w";
     }
 
-    makeMove(move: Move): Move | null {
+    makeMove(move: Move, clearUndo = true): Move | null {
         const madeMove = this.game.move(move);
         if(madeMove) {
+            if(clearUndo)
+                this.undoHistory = [];
             this.executeCallbacks(madeMove);
             this.lastMove = madeMove;
         }
@@ -112,7 +127,18 @@ export class ChessLogic {
     }
 
     undo() {
-        this.game.undo();
+        const move = this.game.undo();
+        if(move)
+            this.undoHistory.push(move);
+        this.lastMove = this.getHistory() ? this.getHistory()[this.getHistory().length-1] : undefined;
+        this.updateDisplay?.next();
+    }
+
+    redo() {
+        console.log(this.undoHistory);
+        const redoMove = this.undoHistory.pop();
+        if(redoMove)
+            this.makeMove(redoMove, false);
     }
 
     getCurrentAnalysis(): Promise<Analysis> {
@@ -121,10 +147,6 @@ export class ChessLogic {
                 accept(this.currentAnalysisInfo.analysis);
             }
             this.chessAnalyser.analysePosition(this).then(analysis => {
-                console.log(this.game.ascii());
-                console.log(this.game.history());
-                console.log(this.game.fen());
-                console.log(this.getFen());
                 if(analysis.error) {
                     reject(analysis);
                 }

@@ -64,6 +64,10 @@ export class ChessDisplay extends React.Component<Props, State> {
 
         this.squareRendered = new SquareRenderer(this.game);
         this.pieceRenderer = new PieceRenderer(this.game);
+
+        this.game.subscribeToView(() => {
+            this.forceUpdate();
+        })
     }
 
     componentDidMount(): void {
@@ -140,7 +144,6 @@ export class ChessDisplay extends React.Component<Props, State> {
 
         return squares;
     }
-
 
     render() {
         let boardNodes = this.buildChessSquares();

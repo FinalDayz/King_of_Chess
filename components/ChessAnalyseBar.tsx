@@ -44,7 +44,7 @@ export class ChessAnalyseBar extends React.Component<Props, State> {
     }
 
     componentDidMount() {
-        this.subscription = this.props.game.subscribe((move) => {
+        this.subscription = this.props.game.subscribeToMove((move) => {
             this.madeMove(move);
         });
         this._mounted = true;

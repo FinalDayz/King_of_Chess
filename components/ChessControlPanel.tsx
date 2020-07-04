@@ -24,10 +24,12 @@ export class ChessControlPanel extends React.Component<Props, State> {
     render() {
         return (
             <View style={styles.wrapper}>
-                <TouchableOpacity style={styles.controlButtonWrapper} onPress={() => this.props.game.undo()}>
+                <TouchableOpacity style={styles.controlButtonWrapper}
+                                  onPress={() => this.props.game.undo()}>
                     <Text style={styles.controlButton}>{'<'}</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.controlButtonWrapper}>
+                <TouchableOpacity style={styles.controlButtonWrapper}
+                                  onPress={() => this.props.game.redo()}>
                     <Text style={styles.controlButton}>{'>'}</Text>
                 </TouchableOpacity>
 
