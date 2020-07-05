@@ -3,10 +3,11 @@ import {StyleSheet, Text, View} from 'react-native';
 import Chess from 'chess.js';
 import {ChessLogic} from "../models/ChessLogic";
 import {ChessDisplay} from "./screens/ChessDisplay";
-import {ComputerChessPlayer} from "./chessPlayers/ComputerChessPlayer";
-import {TouchscreenPlayer} from "./chessPlayers/TouchscreenPlayer";
+import {ComputerChessPlayer} from "../models/chessPlayers/ComputerChessPlayer";
+import {TouchscreenPlayer} from "../models/chessPlayers/TouchscreenPlayer";
 import {ChessAnalyseBar} from "./ChessAnalyseBar";
 import {ChessControlPanel} from "./ChessControlPanel";
+import {ModePlayerAgainstComputer} from "./modes/ModePlayerAgainstComputer";
 
 export interface Props {
 }
@@ -38,14 +39,14 @@ export class Main extends React.Component<Props, State> {
         }
         return (
             <View>
-
-                <ChessAnalyseBar game={this.state.chessLogic}/>
-                <ChessDisplay
-                    game={this.state.chessLogic}
-                    blackPlayer={new ComputerChessPlayer(this.state.chessLogic, 10)}
-                    whitePlayer={new TouchscreenPlayer(this.state.chessLogic)}
-                />
-                <ChessControlPanel game={this.state.chessLogic}/>
+                <ModePlayerAgainstComputer/>
+                {/*<ChessAnalyseBar game={this.state.chessLogic}/>*/}
+                {/*<ChessDisplay*/}
+                {/*    game={this.state.chessLogic}*/}
+                {/*    blackPlayer={new ComputerChessPlayer(this.state.chessLogic, 10)}*/}
+                {/*    whitePlayer={new TouchscreenPlayer(this.state.chessLogic)}*/}
+                {/*/>*/}
+                {/*<ChessControlPanel game={this.state.chessLogic}/>*/}
             </View>
         );
     }

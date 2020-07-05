@@ -10,8 +10,8 @@ import {
 } from 'react-native';
 import {Square} from 'chess.js';
 import {ChessLogic} from "../../models/ChessLogic";
-import {ChessPlayerInterface} from "../chessPlayers/ChessPlayerInterface";
-import {HumanPlayerInterface} from "../chessPlayers/HumanPlayerInterface";
+import {ChessPlayerInterface} from "../../models/chessPlayers/ChessPlayerInterface";
+import {HumanPlayerInterface} from "../../models/chessPlayers/HumanPlayerInterface";
 import {SquareRenderer} from "../renderers/SquareRenderer";
 import {PieceRenderer} from "../renderers/PieceRenderer";
 import {Position} from "../../models/Position";

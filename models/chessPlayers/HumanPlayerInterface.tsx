@@ -1,6 +1,6 @@
 import {ChessPlayerInterface} from "./ChessPlayerInterface";
 import {Square} from "chess.js";
-import {ChessLogic} from "../../models/ChessLogic";
+import {ChessLogic} from "../ChessLogic";
 
 export interface HumanPlayerInterface extends ChessPlayerInterface {
 

@@ -1,10 +1,10 @@
 import {HumanPlayerInterface} from "./HumanPlayerInterface";
-import {ChessLogic} from "../../models/ChessLogic";
+import {ChessLogic} from "../ChessLogic";
 import {Move, Square} from "chess.js";
-import {ChessDisplay} from "../screens/ChessDisplay";
-import {DotMoveDecorator} from "../renderers/RenderDecorators/DotMoveDecorator";
-import {RenderDecorator} from "../renderers/RenderDecorators/RenderDecorator";
-import {DotCapturedMoveDecorator} from "../renderers/RenderDecorators/DotCapturedMoveDecorator";
+import {ChessDisplay} from "../../components/screens/ChessDisplay";
+import {DotMoveDecorator} from "../../components/renderers/RenderDecorators/DotMoveDecorator";
+import {RenderDecorator} from "../../components/renderers/RenderDecorators/RenderDecorator";
+import {DotCapturedMoveDecorator} from "../../components/renderers/RenderDecorators/DotCapturedMoveDecorator";
 
 export class TouchscreenPlayer implements HumanPlayerInterface {
     private isWhite: boolean|null = null;

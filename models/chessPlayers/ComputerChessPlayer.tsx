@@ -1,8 +1,8 @@
 import {ChessPlayerInterface} from "./ChessPlayerInterface";
-import {ChessLogic} from "../../models/ChessLogic";
+import {ChessLogic} from "../ChessLogic";
 import {Move} from "chess.js";
-import {ChessDisplay} from "../screens/ChessDisplay";
-import {ChessAnalyser} from "../../models/ChessAnalyser";
+import {ChessDisplay} from "../../components/screens/ChessDisplay";
+import {ChessAnalyser} from "../ChessAnalyser";
 import {Alert} from "react-native";
 
 export class ComputerChessPlayer implements ChessPlayerInterface {

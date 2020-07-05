@@ -1,6 +1,6 @@
-import {ChessLogic} from "../../models/ChessLogic";
+import {ChessLogic} from "../ChessLogic";
 import {Move} from "chess.js";
-import {ChessDisplay} from "../screens/ChessDisplay";
+import {ChessDisplay} from "../../components/screens/ChessDisplay";
 
 export interface ChessPlayerInterface {
      game: ChessLogic;
