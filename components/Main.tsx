@@ -1,4 +1,4 @@
-import React from "react";
+import React, {createRef} from "react";
 import {StyleSheet, Text, View} from 'react-native';
 import Chess from 'chess.js';
 import {ChessLogic} from "../models/ChessLogic";
@@ -17,6 +17,8 @@ interface State {
 }
 
 export class Main extends React.Component<Props, State> {
+    private startCompetitive?: () => void;
+    private competitiveMode = createRef<CompetitiveMode>();
 
 
     constructor(props: Props, state: State) {
@@ -31,15 +33,18 @@ export class Main extends React.Component<Props, State> {
         this.setState(  {
             chessLogic: new ChessLogic(),
         });
+
+        console.log("START componentDidMount");
+        if (this.competitiveMode.current) {
+            console.log("START MODE");
+            this.competitiveMode.current.startMode();
+        }
     }
 
     render() {
-        if(!this.state.chessLogic) {
-            return (null);
-        }
         return (
-            <View>
-                <CompetitiveMode/>
+            <View style={{flex: 1}}>
+                <CompetitiveMode ref={this.competitiveMode}/>
                 {/*<ChessAnalyseBar game={this.state.chessLogic}/>*/}
                 {/*<ChessDisplay*/}
                 {/*    game={this.state.chessLogic}*/}

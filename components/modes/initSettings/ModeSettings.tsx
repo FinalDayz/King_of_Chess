@@ -5,16 +5,36 @@ interface Props {
     difficulty: boolean,
     side: boolean,
     time: boolean,
-    startCallback: (settings: State) => void;
+    renderPlayAgainst: boolean,
+    startCallback: (settings: State) => void,
+
+    initialDifficulty: number,
+    initialIsWhite: boolean,
+    initialTime: number,
+    initialAgainstAI: boolean,
 }
 
 interface State {
     difficulty: number,
     isWhite: boolean,
     time: number,
+    againstAI: boolean,
 }
 
+
 export class ModeSettings extends React.Component<Props, State> {
+    static defaultProps = {
+        difficulty: true,
+        side: true,
+        time: true,
+        renderPlayAgainst: true,
+
+        initialDifficulty: 20,
+        initialIsWhite: true,
+        initialTime: 5,
+        initialAgainstAI: true,
+    };
+
     private lastUpdate: number = Date.now();
     private readonly timeConsts = [1, 2, 3, 5, 10, 20, 30, 45, 60, 90, 120];
     private nextUpdate: boolean = false;
@@ -24,9 +44,10 @@ export class ModeSettings extends React.Component<Props, State> {
 
         this.state = {
             ...state,
-            isWhite: true,
-            difficulty: 5,
-            time: this.timeConsts[0],
+            isWhite: props.initialIsWhite,
+            difficulty: props.initialDifficulty,
+            time: props.initialTime,
+            againstAI: props.initialAgainstAI
         }
     }
 
@@ -67,6 +88,12 @@ export class ModeSettings extends React.Component<Props, State> {
         });
     }
 
+    setAgainstAI(againstAI: boolean) {
+        this.setState({
+            againstAI: againstAI,
+        });
+    }
+
     start() {
         this.props.startCallback(this.state);
     }
@@ -85,10 +112,12 @@ export class ModeSettings extends React.Component<Props, State> {
                     {this.props.side ? this.renderSide() : null}
 
                     {this.props.time ? this.renderTime() : null}
+
+                    {this.props.renderPlayAgainst ? this.renderPlayAgainst() : null}
                 </View>
-                {/*<View style={[styles.contentBottom, styles.content]}>*/}
-                <Button title={'Start'} onPress={() => this.start}/>
-                {/*</View>*/}
+                <View style={[styles.startBtn]}>
+                <Button title={'Start'} onPress={() => {this.start()}}/>
+                 </View>
             </View>
         );
     }
@@ -105,6 +134,7 @@ export class ModeSettings extends React.Component<Props, State> {
                         onSlidingComplete={(value) => {
                             this.changedTime(value, true)
                         }}
+                        value={this.props.initialTime}
                         style={{width: 200, height: 40}}
                         minimumValue={0}
                         maximumValue={this.timeConsts.length}
@@ -144,16 +174,33 @@ export class ModeSettings extends React.Component<Props, State> {
                             this.changedDifficulty(value)
                         }}
                         onSlidingComplete={(value) => {
-                            console.log("COMPLETE " + value);
                             this.changedDifficulty(value, true)
                         }}
+                        value={this.props.initialDifficulty}
                         style={{width: 200, height: 40}}
-                        minimumValue={0}
+                        minimumValue={1}
                         maximumValue={100}
                         minimumTrackTintColor="#FFFFFF"
                         maximumTrackTintColor="#000000"
                     />
                     <Text style={styles.inputValue}>{this.state.difficulty}</Text>
+                </View>
+            </View>
+        );
+    }
+
+    renderPlayAgainst() {
+        return (
+            <View style={styles.setting}>
+                <Text style={styles.settingsText}>Play against</Text>
+                <View style={styles.settingsInput}>
+
+                    <View style={this.state.againstAI ? styles.selectedButton : styles.nonSelectedButton}>
+                        <Button title={'Computer'} onPress={() => {this.setAgainstAI(true)}}/>
+                    </View>
+                    <View style={this.state.againstAI ?  styles.nonSelectedButton : styles.selectedButton}>
+                        <Button title={'Player'} onPress={() => {this.setAgainstAI(false)}}/>
+                    </View>
                 </View>
             </View>
         );
@@ -211,5 +258,11 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.51,
         shadowRadius: 13.16,
         elevation: 20,
+    },
+    startBtn: {
+        borderTopWidth: 1,
+        padding: 10,
+        width: '100%',
     }
 });
+

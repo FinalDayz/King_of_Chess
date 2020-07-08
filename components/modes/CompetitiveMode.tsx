@@ -1,5 +1,5 @@
 import React from "react";
-import {Modal, StyleSheet, View} from "react-native";
+import {Modal, Text, StyleSheet, View} from "react-native";
 import {ChessMode} from "../../models/ChessMode";
 import {ModeSettings} from "./initSettings/ModeSettings";
 
@@ -8,7 +8,7 @@ interface Props {
 }
 
 interface State {
-
+    showSettings: boolean
 }
 
 export class CompetitiveMode extends React.Component<Props, State> implements ChessMode {
@@ -17,26 +17,48 @@ export class CompetitiveMode extends React.Component<Props, State> implements Ch
 
         this.state = {
             ...state,
-        }
+            showSettings: false
+        };
+    }
+
+    componentDidMount() {
+        this.startMode();
     }
 
     render() {
+        console.log("showSettings? " + this.state.showSettings);
         return (
             <View style={styles.wrapper}>
+
                 <View style={styles.settingsScreen}>
+                    {/*<Modal*/}
+                    {/*    visible={this.state.showSettings}*/}
+                    {/*    transparent={true}>*/}
+                    {/*    <View style={{ opacity: 0.5, backgroundColor: 'black', width: '100%', height: '100%'}}/>*/}
+                    {/*</Modal>*/}
+                </View>
+                <View style={styles.settingsScreen}>
+                    {/*<Modal*/}
+                    {/*    visible={this.state.showSettings}*/}
+                    {/*    transparent={true}>*/}
+                    {/*    <View style={{ opacity: 0.5, backgroundColor: 'black', width: '100%', height: '100%'}}/>*/}
+                    {/*</Modal>*/}
                     <Modal
-                        animationType="slide"
+                        animationType="fade"
                         transparent={true}
-                        visible={true}
+                        visible={this.state.showSettings}
                         onRequestClose={() => {
                             // Alert.alert("Modal has been closed.");
                         }}
                     >
+                        <View style={{ opacity: 0.5, position:'absolute',backgroundColor: 'black', width: '100%', height: '100%'}}/>
                         <ModeSettings
-                            difficulty={true}
-                            side={true}
-                            time={true}
-                            startCallback={() => {}}
+                            startCallback={() => {
+                                console.log("CLOSE");
+                                this.setState({
+                                    showSettings: false,
+                                })
+                            }}
                         />
                     </Modal>
                 </View>
@@ -44,20 +66,20 @@ export class CompetitiveMode extends React.Component<Props, State> implements Ch
         );
     }
 
-    showMode(): void {
-    }
-
-    showInitSettings(): void {
-
+    startMode(): void {
+        this.setState({
+            showSettings: true,
+        })
     }
 }
 
 const styles = StyleSheet.create({
     settingsScreen: {
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
-        marginTop: 22
+        paddingTop: 22
         // marginTop: 300,
 
         // marginHorizontal: '5%',
@@ -68,6 +90,6 @@ const styles = StyleSheet.create({
         // backgroundColor: 'magenta',
     },
     wrapper: {
-        // flex: 1,
+        flex: 1,
     }
 });

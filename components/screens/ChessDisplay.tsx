@@ -1,7 +1,7 @@
 import React, {ReactNode} from "react";
 import {
     FlatList,
-    GestureResponderEvent, ListView,
+    ListView,
     PanResponder,
     PanResponderInstance, SectionList,
     StyleSheet, Text, TouchableHighlight, TouchableNativeFeedback,
@@ -149,35 +149,36 @@ export class ChessDisplay extends React.Component<Props, State> {
         let boardNodes = this.buildChessSquares();
 
         return (
-            <PositionView style={styles.chessboard}
-                  onTouchMove={(event) => {
-                      this.clickToTile(event.nativeEvent.locationX, event.nativeEvent.locationY);
-                  }}
-                  onTouchEnd={this.releasedSquare.bind(this)}
-                  onTouchStart={(event) => {
-                      this.clickToTile(event.nativeEvent.locationX, event.nativeEvent.locationY);
-                      this.pressSquare();
-                  }}
+            <PositionView
+                style={styles.chessboard}
+                onTouchMove={(event) => {
+                    this.clickToTile(event.nativeEvent.locationX, event.nativeEvent.locationY);
+                }}
+                onTouchEnd={this.releasedSquare.bind(this)}
+                onTouchStart={(event) => {
+                    this.clickToTile(event.nativeEvent.locationX, event.nativeEvent.locationY);
+                    this.pressSquare();
+                }}
 
-                  positionFeedback={(pos) => {
-                      this.boardPosition = pos
-                  }}>
+                positionFeedback={(pos) => {
+                    this.boardPosition = pos
+                }}>
                 {boardNodes}
             </PositionView>
         );
     }
 
-    private touchMove(event: GestureResponderEvent) {
-        for (const player of this.state.players) {
-            if (this.state.playerTurn !== player)
-                continue;
-            if ('touchMoved' in player) {
-                (player as HumanPlayerInterface).touchMoved(
-                    {x: event.nativeEvent.pageX, y: event.nativeEvent.pageY}
-                );
-            }
-        }
-    }
+    // private touchMove(event: GestureResponderEvent) {
+    //     for (const player of this.state.players) {
+    //         if (this.state.playerTurn !== player)
+    //             continue;
+    //         if ('touchMoved' in player) {
+    //             (player as HumanPlayerInterface).touchMoved(
+    //                 {x: event.nativeEvent.pageX, y: event.nativeEvent.pageY}
+    //             );
+    //         }
+    //     }
+    // }
 
     private releasedSquare() {
         this.interactSquare(true);
