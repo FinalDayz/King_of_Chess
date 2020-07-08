@@ -1,7 +1,7 @@
 import React from "react";
 import {Modal, StyleSheet, View} from "react-native";
 import {ChessMode} from "../../models/ChessMode";
-import {PlayAgainstComputerSettings} from "./initSettings/PlayAgainstComputerSettings";
+import {ModeSettings} from "./initSettings/ModeSettings";
 
 interface Props {
 
@@ -11,7 +11,7 @@ interface State {
 
 }
 
-export class ModePlayerAgainstComputer extends React.Component<Props, State> implements ChessMode {
+export class CompetitiveMode extends React.Component<Props, State> implements ChessMode {
     constructor(props: Props, state: State) {
         super(props);
 
@@ -32,7 +32,12 @@ export class ModePlayerAgainstComputer extends React.Component<Props, State> imp
                             // Alert.alert("Modal has been closed.");
                         }}
                     >
-                        <PlayAgainstComputerSettings/>
+                        <ModeSettings
+                            difficulty={true}
+                            side={true}
+                            time={true}
+                            startCallback={() => {}}
+                        />
                     </Modal>
                 </View>
             </View>

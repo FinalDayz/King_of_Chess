@@ -7,7 +7,7 @@ import {ComputerChessPlayer} from "../models/chessPlayers/ComputerChessPlayer";
 import {TouchscreenPlayer} from "../models/chessPlayers/TouchscreenPlayer";
 import {ChessAnalyseBar} from "./ChessAnalyseBar";
 import {ChessControlPanel} from "./ChessControlPanel";
-import {ModePlayerAgainstComputer} from "./modes/ModePlayerAgainstComputer";
+import {CompetitiveMode} from "./modes/CompetitiveMode";
 
 export interface Props {
 }
@@ -39,7 +39,7 @@ export class Main extends React.Component<Props, State> {
         }
         return (
             <View>
-                <ModePlayerAgainstComputer/>
+                <CompetitiveMode/>
                 {/*<ChessAnalyseBar game={this.state.chessLogic}/>*/}
                 {/*<ChessDisplay*/}
                 {/*    game={this.state.chessLogic}*/}
