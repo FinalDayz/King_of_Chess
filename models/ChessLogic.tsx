@@ -20,6 +20,8 @@ export class ChessLogic {
 
     private undoHistory: Move[];
 
+    private capturedPieces: Piece[];
+
     constructor() {
         this.game = Chess.Chess();
         this.chessAnalyser = new ChessAnalyser();
@@ -30,6 +32,7 @@ export class ChessLogic {
             this.updateDisplay = subscriber;
         });
         this.undoHistory = [];
+        this.capturedPieces = [];
     }
 
     subscribeToMove(moveCallback: (move: Move) => void): Subscription {
@@ -109,10 +112,17 @@ export class ChessLogic {
     makeMove(move: Move, clearUndo = true): Move | null {
         const madeMove = this.game.move(move);
         if(madeMove) {
+            if(madeMove.captured) {
+                this.capturedPieces.push({
+                    type: madeMove.captured,
+                    color: madeMove.color
+                });
+            }
             if(clearUndo)
                 this.undoHistory = [];
             this.executeCallbacks(madeMove);
             this.lastMove = madeMove;
+            this.updateDisplay?.next();
         }
         return madeMove;
     }
@@ -126,10 +136,18 @@ export class ChessLogic {
         return null;
     }
 
+    getCapturedPieces(): Piece[] {
+        return this.capturedPieces;
+    }
+
     undo() {
         const move = this.game.undo();
-        if(move)
+        if(move) {
             this.undoHistory.push(move);
+            if(move.captured) {
+                this.capturedPieces.pop();
+            }
+        }
         this.lastMove = this.getHistory() ? this.getHistory()[this.getHistory().length-1] : undefined;
         this.updateDisplay?.next();
     }
@@ -137,8 +155,9 @@ export class ChessLogic {
     redo() {
         console.log(this.undoHistory);
         const redoMove = this.undoHistory.pop();
-        if(redoMove)
+        if(redoMove) {
             this.makeMove(redoMove, false);
+        }
     }
 
     getCurrentAnalysis(): Promise<Analysis> {

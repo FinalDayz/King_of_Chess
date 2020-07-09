@@ -1,6 +1,7 @@
+
 export class ChessImages {
 
-    static chesspieces: {[index: string]:any} = {
+    static chesspieces: {[index: string]: any} = {
         'b-b': require('../assets/chesspieces/b-b.png'),
         'b-k': require('../assets/chesspieces/b-k.png'),
         'b-n': require('../assets/chesspieces/b-n.png'),

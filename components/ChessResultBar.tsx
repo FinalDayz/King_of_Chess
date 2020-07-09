@@ -2,6 +2,7 @@ import React from "react";
 import {ChessLogic} from "../models/ChessLogic";
 import {Text, StyleSheet, View, Image} from "react-native";
 import {ChessImages} from "../models/ChessImages";
+import {Piece, PieceType} from "chess.js";
 
 interface Props {
     game: ChessLogic
@@ -15,28 +16,54 @@ export class ChessResultBar extends React.Component<Props, State>{
     constructor(props: Props, state: State) {
         super(props, state);
 
+        props.game.subscribeToView(() => {
+            console.log("UPDATEEE");
+            this.forceUpdate();
+        })
     }
 
     render() {
-        const image = ChessImages.chesspieces['w-k'];
+        const capturedPieces: {'w': Array<PieceType>, 'b': Array<PieceType>, } = {'w': [], 'b': []};
+
+        for(const piece of this.props.game.getCapturedPieces()) {
+            capturedPieces[piece.color].push(piece.type);
+        }
+
+        console.log(capturedPieces);
+
         return (
             <View style={styles.wrapper}>
                 <View style={[styles.block,styles.whiteBlock]}>
                     <Text style={[styles.text, styles.whitesText]}>Captured</Text>
-                    <Image style={styles.pieceImage} source={image}/>
+                    {this.renderPieces('b', capturedPieces['w'])}
                 </View>
                 <View style={[styles.block, styles.blackBlock]}>
                     <Text style={[styles.text, styles.blacksText]}>Captured</Text>
+                    {this.renderPieces('w', capturedPieces['b'])}
                 </View>
             </View>
         );
+    }
+
+    renderPieces(color: 'w'|'b', pieceType: PieceType[]) {
+        const pieces = [];
+        for(const piece of pieceType) {
+            const pieceString = color + '-' + piece;
+            pieces.push(
+                <Image
+                    style={styles.pieceImage}
+                    source={ChessImages.chesspieces[pieceString]}/>
+                );
+        }
+
+        return pieces;
     }
 
 }
 
 const styles = StyleSheet.create({
     pieceImage: {
-        width: 30,
+        width: 15,
         height: 30,
     },
     whitesText: {
@@ -49,7 +76,7 @@ const styles = StyleSheet.create({
        fontSize: 16,
     },
     blackBlock: {
-        justifyContent: 'flex-end',
+        justifyContent: 'flex-start',
         backgroundColor: 'black',
     },
     whiteBlock: {
