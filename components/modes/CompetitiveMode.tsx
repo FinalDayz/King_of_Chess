@@ -1,23 +1,36 @@
 import React from "react";
-import {Modal, Text, StyleSheet, View} from "react-native";
+import {Modal, Text, StyleSheet, View, Alert} from "react-native";
 import {ChessMode} from "../../models/ChessMode";
 import {ModeSettings} from "./initSettings/ModeSettings";
+import {ChessDisplay} from "../screens/ChessDisplay";
+import {ChessLogic} from "../../models/ChessLogic";
+import {ChessPlayerInterface} from "../../models/chessPlayers/ChessPlayerInterface";
+import {TouchscreenPlayer} from "../../models/chessPlayers/TouchscreenPlayer";
+import {ChessResultBar} from "../ChessResultBar";
 
 interface Props {
 
 }
 
 interface State {
-    showSettings: boolean
+    showSettings: boolean,
+    game: ChessLogic,
+    whitePlayer: ChessPlayerInterface,
+    blackPlayer: ChessPlayerInterface,
 }
 
 export class CompetitiveMode extends React.Component<Props, State> implements ChessMode {
     constructor(props: Props, state: State) {
         super(props);
 
+        const game = new ChessLogic();
+
         this.state = {
             ...state,
-            showSettings: false
+            showSettings: false,
+            game: game,
+            whitePlayer: new TouchscreenPlayer(game),
+            blackPlayer: new TouchscreenPlayer(game),
         };
     }
 
@@ -25,39 +38,34 @@ export class CompetitiveMode extends React.Component<Props, State> implements Ch
         this.startMode();
     }
 
+    start() {
+        this.setState({
+            showSettings: false,
+        });
+    }
+
     render() {
         console.log("showSettings? " + this.state.showSettings);
         return (
             <View style={styles.wrapper}>
 
+                <ChessDisplay
+                    game={this.state.game}
+                    whitePlayer={this.state.whitePlayer}
+                    blackPlayer={this.state.blackPlayer}>
+                </ChessDisplay>
+                <ChessResultBar
+                    game={this.state.game}/>
                 <View style={styles.settingsScreen}>
-                    {/*<Modal*/}
-                    {/*    visible={this.state.showSettings}*/}
-                    {/*    transparent={true}>*/}
-                    {/*    <View style={{ opacity: 0.5, backgroundColor: 'black', width: '100%', height: '100%'}}/>*/}
-                    {/*</Modal>*/}
-                </View>
-                <View style={styles.settingsScreen}>
-                    {/*<Modal*/}
-                    {/*    visible={this.state.showSettings}*/}
-                    {/*    transparent={true}>*/}
-                    {/*    <View style={{ opacity: 0.5, backgroundColor: 'black', width: '100%', height: '100%'}}/>*/}
-                    {/*</Modal>*/}
                     <Modal
                         animationType="fade"
                         transparent={true}
                         visible={this.state.showSettings}
-                        onRequestClose={() => {
-                            // Alert.alert("Modal has been closed.");
-                        }}
                     >
                         <View style={{ opacity: 0.5, position:'absolute',backgroundColor: 'black', width: '100%', height: '100%'}}/>
                         <ModeSettings
                             startCallback={() => {
-                                console.log("CLOSE");
-                                this.setState({
-                                    showSettings: false,
-                                })
+                                this.start();
                             }}
                         />
                     </Modal>
