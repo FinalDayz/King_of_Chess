@@ -29,7 +29,7 @@ export class ModeSettings extends React.Component<Props, SettingsState> {
         time: true,
         renderPlayAgainst: true,
 
-        initialDifficulty: 20,
+        initialDifficulty: 5,
         initialIsWhite: true,
         initialTime: 5,
         initialAgainstAI: true,
@@ -178,8 +178,8 @@ export class ModeSettings extends React.Component<Props, SettingsState> {
                         }}
                         value={this.props.initialDifficulty}
                         style={{width: 200, height: 40}}
-                        minimumValue={1}
-                        maximumValue={100}
+                        minimumValue={0}
+                        maximumValue={20}
                         minimumTrackTintColor="#FFFFFF"
                         maximumTrackTintColor="#000000"
                     />

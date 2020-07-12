@@ -40,6 +40,7 @@ export class ChessLogic {
     }
 
     subscribeToView(moveCallback: () => void): Subscription {
+
         return this.updateDisplayObservable.subscribe(moveCallback);
     }
 

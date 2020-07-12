@@ -16,14 +16,16 @@ export class ChessResultBar extends React.Component<Props, State>{
     constructor(props: Props, state: State) {
         super(props, state);
 
+        console.log("SUBSCRIBE");
         props.game.subscribeToView(() => {
+            console.log("FORCEE");
             this.forceUpdate();
         })
     }
 
     render() {
         const capturedPieces: {'w': Array<PieceType>, 'b': Array<PieceType>, } = {'w': [], 'b': []};
-
+        console.log(capturedPieces);
         for(const piece of this.props.game.getCapturedPieces()) {
             capturedPieces[piece.color].push(piece.type);
         }
@@ -32,11 +34,11 @@ export class ChessResultBar extends React.Component<Props, State>{
         return (
             <View style={styles.wrapper}>
                 <View style={[styles.block,styles.whiteBlock]}>
-                    <Text style={[styles.text, styles.whitesText]}>Captured</Text>
+                    <Text style={[styles.text, styles.whitesText]}>Pieces</Text>
                     {this.renderPieces('b', capturedPieces['w'])}
                 </View>
                 <View style={[styles.block, styles.blackBlock]}>
-                    <Text style={[styles.text, styles.blacksText]}>Captured</Text>
+                    <Text style={[styles.text, styles.blacksText]}>Pieces</Text>
                     {this.renderPieces('w', capturedPieces['b'])}
                 </View>
             </View>

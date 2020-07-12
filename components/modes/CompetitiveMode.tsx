@@ -65,7 +65,6 @@ export class CompetitiveMode extends React.Component<Props, State> implements Ch
             whitePlayer = opponent;
         }
 
-        console.log(opponent);
 
         this.displaySettings.whiteDown = settings.isWhite;
 
