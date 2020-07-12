@@ -1,12 +1,13 @@
 import React from "react";
 import {Modal, Text, StyleSheet, View, Alert} from "react-native";
 import {ChessMode} from "../../models/ChessMode";
-import {ModeSettings} from "./initSettings/ModeSettings";
-import {ChessDisplay} from "../screens/ChessDisplay";
+import {ModeSettings, SettingsState} from "./initSettings/ModeSettings";
+import {ChessDisplay, DisplaySettings} from "../screens/ChessDisplay";
 import {ChessLogic} from "../../models/ChessLogic";
 import {ChessPlayerInterface} from "../../models/chessPlayers/ChessPlayerInterface";
 import {TouchscreenPlayer} from "../../models/chessPlayers/TouchscreenPlayer";
 import {ChessResultBar} from "../ChessResultBar";
+import {ComputerChessPlayer} from "../../models/chessPlayers/ComputerChessPlayer";
 
 interface Props {
 
@@ -17,13 +18,20 @@ interface State {
     game: ChessLogic,
     whitePlayer: ChessPlayerInterface,
     blackPlayer: ChessPlayerInterface,
+
 }
 
 export class CompetitiveMode extends React.Component<Props, State> implements ChessMode {
+    private displaySettings: DisplaySettings;
+
     constructor(props: Props, state: State) {
         super(props);
 
         const game = new ChessLogic();
+
+        this.displaySettings = {
+            whiteDown: true
+        };
 
         this.state = {
             ...state,
@@ -38,22 +46,48 @@ export class CompetitiveMode extends React.Component<Props, State> implements Ch
         this.startMode();
     }
 
-    start() {
+    start(settings: SettingsState) {
+        const game = this.state.game;
+        let whitePlayer, blackPlayer;
+
+        console.log(settings.againstAI);
+
+        const player = new TouchscreenPlayer(game);
+        const opponent = settings.againstAI ?
+            new ComputerChessPlayer(game, settings.difficulty) :
+            new TouchscreenPlayer(game);
+
+        if(settings.isWhite) {
+            whitePlayer = player;
+            blackPlayer = opponent;
+        } else {
+            blackPlayer = player;
+            whitePlayer = opponent;
+        }
+
+        console.log(opponent);
+
+        this.displaySettings.whiteDown = settings.isWhite;
+
         this.setState({
             showSettings: false,
+            whitePlayer: whitePlayer,
+            blackPlayer: blackPlayer,
         });
     }
 
     render() {
-        console.log("showSettings? " + this.state.showSettings);
         return (
             <View style={styles.wrapper}>
+                {this.state.showSettings? (null) : (
 
-                <ChessDisplay
-                    game={this.state.game}
-                    whitePlayer={this.state.whitePlayer}
-                    blackPlayer={this.state.blackPlayer}>
-                </ChessDisplay>
+                    <ChessDisplay
+                        displaySettings={this.displaySettings}
+                        game={this.state.game}
+                        whitePlayer={this.state.whitePlayer}
+                        blackPlayer={this.state.blackPlayer}>
+                    </ChessDisplay>
+                )}
                 <ChessResultBar
                     game={this.state.game}/>
                 <View style={styles.settingsScreen}>
@@ -64,8 +98,8 @@ export class CompetitiveMode extends React.Component<Props, State> implements Ch
                     >
                         <View style={{ opacity: 0.5, position:'absolute',backgroundColor: 'black', width: '100%', height: '100%'}}/>
                         <ModeSettings
-                            startCallback={() => {
-                                this.start();
+                            startCallback={(settings) => {
+                                this.start(settings);
                             }}
                         />
                     </Modal>

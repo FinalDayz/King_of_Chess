@@ -71,7 +71,7 @@ export class ChessLogic {
         if (x < 1 || x > 8 || y < 1 || y > 8)
             return null;
 
-        if (whiteDown) {
+        if (!whiteDown) {
             x = 7 - (x - 1) + 1;
             y = 7 - (y - 1) + 1;
         }
@@ -89,10 +89,10 @@ export class ChessLogic {
             y: (+square[1] - 1),
         };
 
-        if (whiteDown)
+        if (!whiteDown)
             pos.x = 7 - pos.x;
 
-        if (!whiteDown)
+        if (whiteDown)
             pos.y = 7 - pos.y;
         return pos;
     }

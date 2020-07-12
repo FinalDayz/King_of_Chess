@@ -1,5 +1,6 @@
 import React from "react";
 import {Text, Button, ImageBackground, View, Image, StyleSheet, TouchableOpacity} from "react-native";
+// @ts-ignore
 import {NavigationParams, NavigationScreenProp, NavigationState} from "react-navigation";
 
 interface Props {

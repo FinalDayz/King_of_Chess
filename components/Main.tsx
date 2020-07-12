@@ -34,9 +34,7 @@ export class Main extends React.Component<Props, State> {
             chessLogic: new ChessLogic(),
         });
 
-        console.log("START componentDidMount");
         if (this.competitiveMode.current) {
-            console.log("START MODE");
             this.competitiveMode.current.startMode();
         }
     }

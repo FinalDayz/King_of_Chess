@@ -17,14 +17,18 @@ import {PieceRenderer} from "../renderers/PieceRenderer";
 import {Position} from "../../models/Position";
 import {PositionView} from "../PositionView";
 
+export interface DisplaySettings {
+    whiteDown: boolean
+}
+
 export interface Props {
     game: ChessLogic,
     whitePlayer: ChessPlayerInterface,
     blackPlayer: ChessPlayerInterface,
+    displaySettings: DisplaySettings
 }
 
 interface State {
-    whiteDown: boolean,
     whitePlayer: ChessPlayerInterface,
     blackPlayer: ChessPlayerInterface,
     players: Array<ChessPlayerInterface>,
@@ -39,13 +43,18 @@ export class ChessDisplay extends React.Component<Props, State> {
     private boardPosition: undefined | Position;
     private touchSelectedSquare: Square | null = null;
 
+    static defaultProps = {
+        displaySettings: {
+            whiteDown: true,
+        }
+    };
+
     public constructor(props: Props, state: State) {
         super(props);
 
 
         this.state = {
             ...state,
-            whiteDown: false,
             whitePlayer: props.whitePlayer,
             blackPlayer: props.blackPlayer,
             players: [props.whitePlayer, props.blackPlayer],
@@ -95,7 +104,7 @@ export class ChessDisplay extends React.Component<Props, State> {
         x = Math.ceil(x / this.boardPosition.width * 8);
         y = Math.ceil(y / this.boardPosition.height * 8);
 
-        this.touchSelectedSquare = this.game.positionToSquare(x, y, this.state.whiteDown);
+        this.touchSelectedSquare = this.game.positionToSquare(x, y, this.props.displaySettings.whiteDown);
     }
 
     buildChessSquares(): Array<ReactNode> {
@@ -106,7 +115,7 @@ export class ChessDisplay extends React.Component<Props, State> {
         }
 
         for (let square of this.game.getAllSquares()) {
-            const position = this.game.squareToPosition(square, this.state.whiteDown);
+            const position = this.game.squareToPosition(square, this.props.displaySettings.whiteDown);
             board[position.x][position.y] = square;
         }
 

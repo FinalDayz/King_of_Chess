@@ -6,7 +6,7 @@ interface Props {
     side: boolean,
     time: boolean,
     renderPlayAgainst: boolean,
-    startCallback: (settings: State) => void,
+    startCallback: (settings: SettingsState) => void,
 
     initialDifficulty: number,
     initialIsWhite: boolean,
@@ -14,7 +14,7 @@ interface Props {
     initialAgainstAI: boolean,
 }
 
-interface State {
+export interface SettingsState {
     difficulty: number,
     isWhite: boolean,
     time: number,
@@ -22,7 +22,7 @@ interface State {
 }
 
 
-export class ModeSettings extends React.Component<Props, State> {
+export class ModeSettings extends React.Component<Props, SettingsState> {
     static defaultProps = {
         difficulty: true,
         side: true,
@@ -39,7 +39,7 @@ export class ModeSettings extends React.Component<Props, State> {
     private readonly timeConsts = [1, 2, 3, 5, 10, 20, 30, 45, 60, 90, 120];
     private nextUpdate: boolean = false;
 
-    constructor(props: Props, state: State) {
+    constructor(props: Props, state: SettingsState) {
         super(props);
 
         this.state = {
@@ -51,7 +51,7 @@ export class ModeSettings extends React.Component<Props, State> {
         }
     }
 
-    shouldComponentUpdate(nextProps: Readonly<Props>, nextState: Readonly<State>, nextContext: any): boolean {
+    shouldComponentUpdate(nextProps: Readonly<Props>, nextState: Readonly<SettingsState>, nextContext: any): boolean {
         if (Date.now() - this.lastUpdate > 150 || this.nextUpdate) {
             this.nextUpdate = false;
             this.lastUpdate = Date.now();

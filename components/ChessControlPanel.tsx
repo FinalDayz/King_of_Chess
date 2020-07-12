@@ -19,7 +19,10 @@ export class ChessControlPanel extends React.Component<Props, State> {
         this.state = {
             ...state,
         };
+
+
     }
+
 
     render() {
         return (

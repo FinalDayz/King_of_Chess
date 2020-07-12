@@ -1,9 +1,8 @@
-import { createStackNavigator } from 'react-navigation-stack';
-import { createAppContainer } from 'react-navigation';
 import {CompetitiveMode} from "../modes/CompetitiveMode";
 import {MainScreen} from "./MainScreen";
-import {StackNavigationOptions} from "react-navigation-stack/lib/typescript/src/vendor/types";
 
+import { createAppContainer } from 'react-navigation';
+import {createStackNavigator} from "react-navigation-stack";
 
 const MainNavigation = createStackNavigator({
         MainScreen: {

@@ -17,7 +17,6 @@ export class ChessResultBar extends React.Component<Props, State>{
         super(props, state);
 
         props.game.subscribeToView(() => {
-            console.log("UPDATEEE");
             this.forceUpdate();
         })
     }
@@ -29,7 +28,6 @@ export class ChessResultBar extends React.Component<Props, State>{
             capturedPieces[piece.color].push(piece.type);
         }
 
-        console.log(capturedPieces);
 
         return (
             <View style={styles.wrapper}>
