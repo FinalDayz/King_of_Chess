@@ -8,6 +8,8 @@ import {ChessPlayerInterface} from "../../models/chessPlayers/ChessPlayerInterfa
 import {TouchscreenPlayer} from "../../models/chessPlayers/TouchscreenPlayer";
 import {ChessResultBar} from "../ChessResultBar";
 import {ComputerChessPlayer} from "../../models/chessPlayers/ComputerChessPlayer";
+import {ChessTimer} from "../ChessTimer";
+import {ChessEnd} from "../ChessEnd";
 
 interface Props {
 
@@ -57,7 +59,7 @@ export class CompetitiveMode extends React.Component<Props, State> implements Ch
             new ComputerChessPlayer(game, settings.difficulty) :
             new TouchscreenPlayer(game);
 
-        if(settings.isWhite) {
+        if (settings.isWhite) {
             whitePlayer = player;
             blackPlayer = opponent;
         } else {
@@ -65,6 +67,7 @@ export class CompetitiveMode extends React.Component<Props, State> implements Ch
             whitePlayer = opponent;
         }
 
+        game.addTimer(settings.time);
 
         this.displaySettings.whiteDown = settings.isWhite;
 
@@ -73,29 +76,51 @@ export class CompetitiveMode extends React.Component<Props, State> implements Ch
             whitePlayer: whitePlayer,
             blackPlayer: blackPlayer,
         });
+        game.start();
     }
 
     render() {
         return (
             <View style={styles.wrapper}>
-                {this.state.showSettings? (null) : (
+                {this.state.showSettings ? (null) : (
+                    <View>
+                        <ChessTimer
+                            game={this.state.game}
+                            whiteSide={!this.displaySettings.whiteDown}/>
+                        <ChessResultBar
+                            game={this.state.game}
+                            whiteSide={!this.displaySettings.whiteDown}/>
+                        <ChessDisplay
+                            displaySettings={this.displaySettings}
+                            game={this.state.game}
+                            whitePlayer={this.state.whitePlayer}
+                            blackPlayer={this.state.blackPlayer}>
+                        </ChessDisplay>
+                        <ChessResultBar
+                            game={this.state.game}
+                            whiteSide={this.displaySettings.whiteDown}/>
+                        <ChessTimer
+                            game={this.state.game}
+                            whiteSide={this.displaySettings.whiteDown}/>
 
-                    <ChessDisplay
-                        displaySettings={this.displaySettings}
-                        game={this.state.game}
-                        whitePlayer={this.state.whitePlayer}
-                        blackPlayer={this.state.blackPlayer}>
-                    </ChessDisplay>
+                            <ChessEnd
+                                game={this.state.game}/>
+                    </View>
                 )}
-                <ChessResultBar
-                    game={this.state.game}/>
+
                 <View style={styles.settingsScreen}>
                     <Modal
                         animationType="fade"
                         transparent={true}
                         visible={this.state.showSettings}
                     >
-                        <View style={{ opacity: 0.5, position:'absolute',backgroundColor: 'black', width: '100%', height: '100%'}}/>
+                        <View style={{
+                            opacity: 0.5,
+                            position: 'absolute',
+                            backgroundColor: 'black',
+                            width: '100%',
+                            height: '100%'
+                        }}/>
                         <ModeSettings
                             startCallback={(settings) => {
                                 this.start(settings);

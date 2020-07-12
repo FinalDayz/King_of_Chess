@@ -5,41 +5,47 @@ import {ChessImages} from "../models/ChessImages";
 import {Piece, PieceType} from "chess.js";
 
 interface Props {
-    game: ChessLogic
+    game: ChessLogic,
+    whiteSide: boolean
 }
 
 interface State {
-
 }
 
 export class ChessResultBar extends React.Component<Props, State>{
     constructor(props: Props, state: State) {
         super(props, state);
 
-        console.log("SUBSCRIBE");
         props.game.subscribeToView(() => {
-            console.log("FORCEE");
             this.forceUpdate();
-        })
+        });
+
     }
 
     render() {
+        const thisColor = this.props.whiteSide ? 'w' : 'b';
         const capturedPieces: {'w': Array<PieceType>, 'b': Array<PieceType>, } = {'w': [], 'b': []};
-        console.log(capturedPieces);
+        const points = {'w': 0, 'b': 0};
         for(const piece of this.props.game.getCapturedPieces()) {
+            points[piece.color] += this.props.game.getPiecePoints(piece.type);
             capturedPieces[piece.color].push(piece.type);
         }
 
+        const advantage = points[thisColor];
 
         return (
             <View style={styles.wrapper}>
-                <View style={[styles.block,styles.whiteBlock]}>
-                    <Text style={[styles.text, styles.whitesText]}>Pieces</Text>
-                    {this.renderPieces('b', capturedPieces['w'])}
-                </View>
-                <View style={[styles.block, styles.blackBlock]}>
-                    <Text style={[styles.text, styles.blacksText]}>Pieces</Text>
-                    {this.renderPieces('w', capturedPieces['b'])}
+                <View style={[styles.block,
+                    this.props.whiteSide ? styles.whiteBlock : styles.blackBlock]}>
+                    <Text style={[styles.text,
+                        this.props.whiteSide ? styles.whitesText : styles.blackBlock]}>
+                        Captured Pieces
+                    </Text>
+                    {this.renderPieces(
+                        thisColor,
+                        capturedPieces[thisColor]
+                    )}
+                    <Text> ({advantage > 0 ? '+' : ''}{advantage})</Text>
                 </View>
             </View>
         );
@@ -63,7 +69,7 @@ export class ChessResultBar extends React.Component<Props, State>{
 
 const styles = StyleSheet.create({
     pieceImage: {
-        width: 15,
+        width: 25,
         height: 30,
     },
     whitesText: {

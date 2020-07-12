@@ -1,19 +1,26 @@
-import Chess, {ChessInstance, Move, Piece, Square} from 'chess.js';
+import Chess, {ChessInstance, Move, Piece, PieceType, Square} from 'chess.js';
 import {ChessAnalyser} from "./ChessAnalyser";
 import {Analysis} from "./Analysis";
 import {Observable, Observer, Subscriber, Subscription} from "rxjs";
+import {ChessStopwatch} from "./ChessStopwatch";
 
+
+const lost: {'w': "WHITE_LOST", 'b': "BLACK_LOST"} = {'w': "WHITE_LOST", 'b': "BLACK_LOST"};
+export interface ENDGAME {
+    result: "WHITE_LOST"|"BLACK_LOST"|"DRAW",
+    cause: "OUT_OF_TIME"|"CHECKMATE"|"STALEMATES"|"DRAW",
+}
 
 export class ChessLogic {
     private game: ChessInstance;
     private selectedSquare?: Square;
     chessAnalyser: ChessAnalyser;
     private currentAnalysisInfo: undefined |
-        { fen: string, analysis: Analysis};
+        { fen: string, analysis: Analysis };
 
     private moveSubscribable: Observable<Move>;
     private observable?: Subscriber<Move>;
-    private lastMove: Move|undefined;
+    private lastMove: Move | undefined;
 
     private updateDisplay?: Subscriber<null>;
     private updateDisplayObservable: Observable<null>;
@@ -21,6 +28,8 @@ export class ChessLogic {
     private undoHistory: Move[];
 
     private capturedPieces: Piece[];
+
+    public stopwatch: undefined | ChessStopwatch;
 
     constructor() {
         this.game = Chess.Chess();
@@ -53,7 +62,40 @@ export class ChessLogic {
     }
 
     hasEnded() {
-        return this.game.game_over();
+        return this.game.game_over() || this.stopwatch?.isOutOfTime();
+    }
+
+    getEndedResult(): false|ENDGAME {
+
+        if(this.stopwatch?.isOutOfTime()) {
+            return {
+                result: lost[this.game.turn()],
+                cause: "OUT_OF_TIME"
+            };
+        }
+
+        if(this.game.in_checkmate()) {
+            return {
+                result: lost[this.game.turn()],
+                cause: "CHECKMATE"
+            };
+        }
+
+        if(this.game.in_stalemate()) {
+            return {
+                result: "DRAW",
+                cause: "STALEMATES"
+            };
+        }
+
+        if(this.game.in_draw()) {
+            return {
+                result: "DRAW",
+                cause: "DRAW"
+            };
+        }
+
+        return false;
     }
 
     getMoves(square?: string): Move[] {
@@ -112,20 +154,35 @@ export class ChessLogic {
 
     makeMove(move: Move, clearUndo = true): Move | null {
         const madeMove = this.game.move(move);
-        if(madeMove) {
-            if(madeMove.captured) {
+        if (madeMove) {
+            if (madeMove.captured) {
                 this.capturedPieces.push({
                     type: madeMove.captured,
                     color: madeMove.color
                 });
             }
-            if(clearUndo)
+            if (clearUndo)
                 this.undoHistory = [];
+
+            if(this.stopwatch)
+                this.stopwatch.switch();
+
             this.executeCallbacks(madeMove);
             this.lastMove = madeMove;
             this.updateDisplay?.next();
         }
         return madeMove;
+    }
+
+    getPiecePoints(piece: PieceType): number {
+        return {
+            'p': 1,
+            'n': 3,
+            'b': 3,
+            'r': 5,
+            'q': 9,
+            'k': 99
+        }[piece]
     }
 
     getMoveFromPositions(moveStr: string): Move | null {
@@ -143,20 +200,20 @@ export class ChessLogic {
 
     undo() {
         const move = this.game.undo();
-        if(move) {
+        if (move) {
             this.undoHistory.push(move);
-            if(move.captured) {
+            if (move.captured) {
                 this.capturedPieces.pop();
             }
         }
-        this.lastMove = this.getHistory() ? this.getHistory()[this.getHistory().length-1] : undefined;
+        this.lastMove = this.getHistory() ? this.getHistory()[this.getHistory().length - 1] : undefined;
         this.updateDisplay?.next();
     }
 
     redo() {
         console.log(this.undoHistory);
         const redoMove = this.undoHistory.pop();
-        if(redoMove) {
+        if (redoMove) {
             this.makeMove(redoMove, false);
         }
     }
@@ -167,7 +224,7 @@ export class ChessLogic {
                 accept(this.currentAnalysisInfo.analysis);
             }
             this.chessAnalyser.analysePosition(this).then(analysis => {
-                if(analysis.error) {
+                if (analysis.error) {
                     reject(analysis);
                 }
                 this.currentAnalysisInfo = {
@@ -198,7 +255,16 @@ export class ChessLogic {
         return this.game.history({verbose: true})
     }
 
-    getLastMove(): Move|undefined {
+    getLastMove(): Move | undefined {
         return this.lastMove;
+    }
+
+    addTimer(time: number) {
+        this.stopwatch = new ChessStopwatch(time);
+    }
+
+    start() {
+        if (this.stopwatch)
+            this.stopwatch.start(this.isWhiteTurn());
     }
 }

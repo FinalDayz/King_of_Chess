@@ -28,7 +28,6 @@ export class TouchscreenPlayer implements HumanPlayerInterface {
                 reject("setIsWhite function must be called first");
             }
 
-            const move = game.getMoves()[0];
             this.moveCallback = accept;
         });
     };
@@ -55,6 +54,8 @@ export class TouchscreenPlayer implements HumanPlayerInterface {
     }
 
     touchedSquare(square: Square, released: boolean) {
+        if(this.game.hasEnded())
+            return;
         if(released) {
             if(this.pressedSquare != null) {
                 this.makeMoveIfValid(square);
