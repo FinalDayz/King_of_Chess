@@ -32,7 +32,7 @@ export class ChessAnalyseBar extends React.Component<Props, State> {
 
     }
 
-    madeMove(move: Move) {
+    analyse() {
         this.props.game.getCurrentAnalysis()
             .then(analysis => {
                 if (this._mounted) {
@@ -44,9 +44,10 @@ export class ChessAnalyseBar extends React.Component<Props, State> {
     }
 
     componentDidMount() {
-        this.subscription = this.props.game.subscribeToMove((move) => {
-            this.madeMove(move);
+        this.subscription = this.props.game.subscribeToView(() => {
+            this.analyse();
         });
+        this.analyse();
         this._mounted = true;
     }
 
@@ -74,21 +75,41 @@ export class ChessAnalyseBar extends React.Component<Props, State> {
             whiteAdvantage = this.centiPawnToPercent(whiteCpAdvantage);
         }
 
-        // console.log("ANALYSE... white advantage " + whiteAdvantage);
+        let mate = undefined;
+
+        if(analysis?.mate) {
+            mate = "Mate in "+analysis.mate;
+            whiteAdvantage = analysis.isWhite ? -150 : 150;
+        }
+
+
         const blackAdvantage = -whiteAdvantage;
+        const bestMove = analysis?.bestMove ? analysis?.bestMove : '-';
+
         return (
 
             <View style={styles.wrapper}>
                 <View style={styles.titleWrapper}>
-                 <Text style={[styles.text, styles.title]}>Advantage White vs Black</Text>
+                 <Text style={[styles.text, styles.title]}>Best move: {bestMove}, White/Black:</Text>
                 </View>
                 <View style={styles.analyseBar}>
                     <View style={[styles.block, styles.white, {flex: (150 - whiteAdvantage)}]}>
-                        <Text style={[styles.text]}>{whiteCpAdvantage / 100}</Text>
+                        <Text style={[styles.text]}>
+                            { mate ? (
+                                analysis?.isWhite ? mate : ''
+                            ) : (
+                                whiteCpAdvantage / 100
+                            )}
+                        </Text>
                     </View>
                     <View style={[styles.block, styles.black, {flex: (150 - blackAdvantage)}]}>
-                        <Text
-                            style={[styles.text, {color: 'white', textAlign: 'right'}]}>{-whiteCpAdvantage / 100}</Text>
+                        <Text style={[styles.text, {color: 'white', textAlign: 'right'}]}>
+                            { mate ? (
+                                analysis?.isWhite ? '' : mate
+                            ) : (
+                                -whiteCpAdvantage / 100
+                            )}
+                        </Text>
                     </View>
                 </View>
             </View>
@@ -101,7 +122,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
     },
     title: {
-        fontSize: 25,
+        fontSize: 22,
         color: 'black'
     },
     analyseBar: {

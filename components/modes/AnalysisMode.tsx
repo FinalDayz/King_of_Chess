@@ -4,14 +4,16 @@ import React from "react";
 import {ChessMode} from "../../models/ChessMode";
 import {ChessDisplay, DisplaySettings} from "../screens/ChessDisplay";
 import {TouchscreenPlayer} from "../../models/chessPlayers/TouchscreenPlayer";
-import {ImageBackground, StyleSheet, View} from "react-native";
+import {AsyncStorage, ImageBackground, StyleSheet, View} from "react-native";
 import {ChessTimer} from "../ChessTimer";
 import {ChessResultBar} from "../ChessResultBar";
-import {ChessEnd} from "../ChessEnd";
+import {ChessEnd, SavedResult} from "../ChessEnd";
 import {ChessAnalyseBar} from "../ChessAnalyseBar";
+import {ChessControlPanel} from "../ChessControlPanel";
+import {NavigationParams, NavigationScreenProp, NavigationState} from "react-navigation";
 
 interface Props {
-
+    navigation: NavigationScreenProp<NavigationState>
 }
 
 interface State {
@@ -44,7 +46,13 @@ export class AnalysisMode extends React.Component<Props, State> implements Chess
     }
 
     componentDidMount() {
+        console.log("navigation "+this.props.navigation.getParam('moveHistory'));
         this.startMode();
+        AsyncStorage.getItem('games')
+            .then(result => {
+                const games = (result ? JSON.parse(result) : [] as SavedResult[]);
+                console.log("games::" , games[0]);
+            });
     }
 
     startMode(): void {
@@ -74,6 +82,7 @@ export class AnalysisMode extends React.Component<Props, State> implements Chess
                             <ChessResultBar
                                 game={this.state.game}
                                 whiteSide={this.displaySettings.whiteDown}/>
+                            <ChessControlPanel game={this.state.game}/>
                             <ChessEnd
                                 game={this.state.game}/>
                         </View>

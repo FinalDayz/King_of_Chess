@@ -1,17 +1,28 @@
-import {ChessLogic} from "../models/ChessLogic";
+import {ChessLogic, ENDGAME} from "../models/ChessLogic";
 import React from "react";
 import {StyleSheet, View, Text, Modal, TouchableWithoutFeedback, Button} from "react-native";
+import {AsyncStorage} from 'react-native';
+import {Move} from "chess.js";
 
 interface Props {
     game: ChessLogic,
+    saveMatch: boolean,
 }
 
 interface State {
     visible: boolean
 }
 
-export class ChessEnd extends React.Component<Props, State> {
+export interface SavedResult {
+    moves: Move[],
+    result: ENDGAME
+}
 
+export class ChessEnd extends React.Component<Props, State> {
+    private savedResult = false;
+    static defaultProps = {
+        saveMatch: false,
+    };
     private timer: undefined | number;
 
 
@@ -36,6 +47,7 @@ export class ChessEnd extends React.Component<Props, State> {
     }
 
     render() {
+
         if (!this.props.game.hasEnded()) {
             return null;
         }
@@ -74,12 +86,6 @@ export class ChessEnd extends React.Component<Props, State> {
                 break;
         }
 
-        // if(this.state.visible)
-        //     setTimeout(() => {
-        //         this.setState({
-        //             visible: false
-        //         });
-        //     }, 3000);
 
         return (
             <Modal
@@ -101,13 +107,15 @@ export class ChessEnd extends React.Component<Props, State> {
                     padding: 10,
                 }}>
                     <Text style={styles.title}>{title}</Text>
-                    <Text style={styles.content}>{content}</Text>
-                    <View style={{paddingTop: 40, flex: 1}}>
-                    <Button title={'Dismiss'} onPress={() => {
-                        this.setState({
-                            visible: false
-                        });
-                    }}/>
+                    <Text style={styles.content}>{content}
+                        {this.props.saveMatch ? '(Match saved)' : ''}
+                    </Text>
+                    <View style={{paddingTop: 20, flex: 1}}>
+                        <Button title={'Dismiss'} onPress={() => {
+                            this.setState({
+                                visible: false
+                            });
+                        }}/>
                     </View>
                 </View>
             </Modal>);

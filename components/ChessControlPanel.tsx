@@ -19,10 +19,7 @@ export class ChessControlPanel extends React.Component<Props, State> {
         this.state = {
             ...state,
         };
-
-
     }
-
 
     render() {
         return (
@@ -59,6 +56,10 @@ const styles = StyleSheet.create({
 
     },
     wrapper: {
+        width: '100%',
+        height: 45,
+        backgroundColor: '#633500',
         flexDirection: 'row',
+        padding: 2,
     },
 });

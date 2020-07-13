@@ -10,6 +10,7 @@ import {ChessResultBar} from "../ChessResultBar";
 import {ComputerChessPlayer} from "../../models/chessPlayers/ComputerChessPlayer";
 import {ChessTimer} from "../ChessTimer";
 import {ChessEnd} from "../ChessEnd";
+import {AnalysisNavigator} from "../AnalysisNavigator";
 
 interface Props {
 
@@ -84,56 +85,60 @@ export class CompetitiveMode extends React.Component<Props, State> implements Ch
             <ImageBackground
                 source={require('../../assets/backgrounds/woodBackground.jpg')}
                 style={{flex: 1}}>
-            <View style={styles.wrapper}>
+                <View style={styles.wrapper}>
 
-                {this.state.showSettings ? (null) : (
-                    <View>
-                        <ChessTimer
-                            game={this.state.game}
-                            whiteSide={!this.displaySettings.whiteDown}/>
-                        <ChessResultBar
-                            game={this.state.game}
-                            whiteSide={!this.displaySettings.whiteDown}/>
-                        <ChessDisplay
-                            displaySettings={this.displaySettings}
-                            game={this.state.game}
-                            whitePlayer={this.state.whitePlayer}
-                            blackPlayer={this.state.blackPlayer}>
-                        </ChessDisplay>
-                        <ChessResultBar
-                            game={this.state.game}
-                            whiteSide={this.displaySettings.whiteDown}/>
-                        <ChessTimer
-                            game={this.state.game}
-                            whiteSide={this.displaySettings.whiteDown}/>
+                    {this.state.showSettings ? (null) : (
+                        <View>
+                            <ChessTimer
+                                game={this.state.game}
+                                whiteSide={!this.displaySettings.whiteDown}/>
+                            <ChessResultBar
+                                game={this.state.game}
+                                whiteSide={!this.displaySettings.whiteDown}/>
+                            <ChessDisplay
+                                displaySettings={this.displaySettings}
+                                game={this.state.game}
+                                whitePlayer={this.state.whitePlayer}
+                                blackPlayer={this.state.blackPlayer}>
+                            </ChessDisplay>
+                            <ChessResultBar
+                                game={this.state.game}
+                                whiteSide={this.displaySettings.whiteDown}/>
+                            <ChessTimer
+                                game={this.state.game}
+                                whiteSide={this.displaySettings.whiteDown}/>
 
                             <ChessEnd
+                                saveMatch={true}
                                 game={this.state.game}/>
+
+                            {/*<AnalysisNavigator*/}
+                            {/*    game={this.state.game}/>*/}
+                        </View>
+                    )}
+
+                    <View style={styles.settingsScreen}>
+                        <Modal
+                            animationType="fade"
+                            transparent={true}
+                            visible={this.state.showSettings}
+                        >
+                            <View style={{
+                                opacity: 0.5,
+                                position: 'absolute',
+                                backgroundColor: 'black',
+                                width: '100%',
+                                height: '100%'
+                            }}/>
+                            <ModeSettings
+                                startCallback={(settings) => {
+                                    this.start(settings);
+                                }}
+                            />
+                        </Modal>
                     </View>
-                )}
 
-                <View style={styles.settingsScreen}>
-                    <Modal
-                        animationType="fade"
-                        transparent={true}
-                        visible={this.state.showSettings}
-                    >
-                        <View style={{
-                            opacity: 0.5,
-                            position: 'absolute',
-                            backgroundColor: 'black',
-                            width: '100%',
-                            height: '100%'
-                        }}/>
-                        <ModeSettings
-                            startCallback={(settings) => {
-                                this.start(settings);
-                            }}
-                        />
-                    </Modal>
                 </View>
-
-            </View>
             </ImageBackground>
         );
     }
