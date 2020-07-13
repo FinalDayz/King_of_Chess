@@ -22,15 +22,15 @@ export class MainScreen extends React.Component<Props, {}> {
                         source={require('../../assets/backgrounds/Title.png')}
                         style={styles.title}/>
                     <View style={styles.rowWrapper}>
-                        <TouchableOpacity
-                            activeOpacity={0.5}
-                            onPress={() => {
-                                this.props.navigation.navigate('Competitive');
-                            }}>
-                            <Image
-                                source={require('../../assets/button/Tutorial_mode_btn.png')}
-                                style={styles.buttonImage}/>
-                        </TouchableOpacity>
+                        {/*<TouchableOpacity*/}
+                        {/*    activeOpacity={0.5}*/}
+                        {/*    onPress={() => {*/}
+                        {/*        this.props.navigation.navigate('Competitive');*/}
+                        {/*    }}>*/}
+                        {/*    <Image*/}
+                        {/*        source={require('../../assets/button/Tutorial_mode_btn.png')}*/}
+                        {/*        style={styles.buttonImage}/>*/}
+                        {/*</TouchableOpacity>*/}
                         <TouchableOpacity
                             activeOpacity={0.5}
                             onPress={() => {
@@ -40,8 +40,7 @@ export class MainScreen extends React.Component<Props, {}> {
                                 source={require('../../assets/button/Puzzle_mode_btn.png')}
                                 style={styles.buttonImage}/>
                         </TouchableOpacity>
-                    </View>
-                    <View style={styles.rowWrapper}>
+
                         <TouchableOpacity
                             activeOpacity={0.5}
                             onPress={() => {
@@ -51,17 +50,18 @@ export class MainScreen extends React.Component<Props, {}> {
                                 source={require('../../assets/button/Practice_mode_btn.png')}
                                 style={styles.buttonImage}/>
                         </TouchableOpacity>
+                    </View>
+                    <View style={styles.rowWrapper}>
                         <TouchableOpacity
                             activeOpacity={0.5}
                             onPress={() => {
-                                this.props.navigation.navigate('Competitive');
+                                this.props.navigation.navigate('Analyse');
                             }}>
                             <Image
-                                source={require('../../assets/button/Analyse_mode_btn.png')}
+                                source={require('../../assets/button/Analysis_mode_btn.png')}
                                 style={styles.buttonImage}/>
                         </TouchableOpacity>
-                    </View>
-                    <View style={styles.rowWrapper}>
+
                         <TouchableOpacity
                             activeOpacity={0.5}
                             onPress={() => {

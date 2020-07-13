@@ -42,24 +42,47 @@ export class ChessTimer extends React.Component<Props, State> {
             return null;
 
         const isThisTurn = this.stopwatch.isWhiteTurn() === this.props.whiteSide;
-        // console.log(this.stopwatch);
+
+        let percentLeft = this.stopwatch.getTime(this.props.whiteSide) / this.stopwatch.getStartTime();
+        percentLeft = Math.round(percentLeft * 100);
+
         return (
-            <View style={[styles.wrapper, isThisTurn ? styles.thisTurn : {}]}>
-                <Text>Time left: {this.stopwatch.getTimeAsString(this.props.whiteSide)}</Text>
+            <View style={[styles.wrapper]}>
+                <View style={[styles.timeBar, isThisTurn ? styles.thisTurn : styles.notThisTurn,
+                    {flex: percentLeft}]}/>
+                <View style={[styles.invertTimeBar,
+                    {flex: 100 - percentLeft}]}/>
+                <Text style={styles.timeText}>Time left: {this.stopwatch.getTimeAsString(this.props.whiteSide)}</Text>
             </View>
         );
     }
 }
 
 const styles = StyleSheet.create({
+    timeText: {
+        padding: 10,
+        paddingLeft: 5,
+        position: 'absolute',
+        fontSize: 16,
+    },
+    notThisTurn: {
+        backgroundColor: 'rgba(254,195,103,0.53)',
+    },
+    invertTimeBar: {
+        backgroundColor: 'gray',
+        height: 40,
+    },
+    timeBar: {
+        height: 40,
+    },
     thisTurn: {
-        backgroundColor: '#fec367',
+        backgroundColor: '#feb841',
     },
     wrapper: {
-        alignItems: 'center',
-        // flex: 2,
-        width: 100,
-        justifyContent: 'center',
+        backgroundColor: 'gray',
+        // alignItems: 'center',
+        // flex: 1,
+        // justifyContent: 'center',
         height: 40,
         flexDirection: 'row',
     }

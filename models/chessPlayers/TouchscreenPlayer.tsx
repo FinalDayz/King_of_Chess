@@ -37,6 +37,8 @@ export class TouchscreenPlayer implements HumanPlayerInterface {
     };
 
     executeMove(move: Move) {
+        if(this.game.hasEnded())
+            return;
         if(this.moveCallback !== null){
             this.moveCallback(move);
         }

@@ -107,13 +107,14 @@ export class ModeSettings extends React.Component<Props, SettingsState> {
                 {/*</View>*/}
                 <View style={[styles.contentBody, styles.content]}>
 
-                    {this.props.difficulty ? this.renderDifficulty() : null}
-
                     {this.props.side ? this.renderSide() : null}
 
                     {this.props.time ? this.renderTime() : null}
 
                     {this.props.renderPlayAgainst ? this.renderPlayAgainst() : null}
+
+
+                    {this.props.difficulty && this.state.againstAI ? this.renderDifficulty() : null}
                 </View>
                 <View style={[styles.startBtn]}>
                 <Button title={'Start'} onPress={() => {this.start()}}/>

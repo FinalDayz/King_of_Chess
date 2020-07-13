@@ -1,6 +1,6 @@
 import {ChessLogic} from "../models/ChessLogic";
 import React from "react";
-import {StyleSheet, View, Text, Modal, TouchableWithoutFeedback} from "react-native";
+import {StyleSheet, View, Text, Modal, TouchableWithoutFeedback, Button} from "react-native";
 
 interface Props {
     game: ChessLogic,
@@ -74,12 +74,12 @@ export class ChessEnd extends React.Component<Props, State> {
                 break;
         }
 
-        if(this.state.visible)
-            setTimeout(() => {
-                this.setState({
-                    visible: false
-                });
-            }, 2000);
+        // if(this.state.visible)
+        //     setTimeout(() => {
+        //         this.setState({
+        //             visible: false
+        //         });
+        //     }, 3000);
 
         return (
             <Modal
@@ -102,6 +102,13 @@ export class ChessEnd extends React.Component<Props, State> {
                 }}>
                     <Text style={styles.title}>{title}</Text>
                     <Text style={styles.content}>{content}</Text>
+                    <View style={{paddingTop: 40, flex: 1}}>
+                    <Button title={'Dismiss'} onPress={() => {
+                        this.setState({
+                            visible: false
+                        });
+                    }}/>
+                    </View>
                 </View>
             </Modal>);
 

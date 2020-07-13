@@ -16,6 +16,7 @@ import {SquareRenderer} from "../renderers/SquareRenderer";
 import {PieceRenderer} from "../renderers/PieceRenderer";
 import {Position} from "../../models/Position";
 import {PositionView} from "../PositionView";
+import {Subscription} from "rxjs";
 
 export interface DisplaySettings {
     whiteDown: boolean
@@ -43,6 +44,8 @@ export class ChessDisplay extends React.Component<Props, State> {
     private boardPosition: undefined | Position;
     private touchSelectedSquare: Square | null = null;
 
+    private viewSubscription: Subscription | undefined;
+
     static defaultProps = {
         displaySettings: {
             whiteDown: true,
@@ -69,18 +72,19 @@ export class ChessDisplay extends React.Component<Props, State> {
             player.setOwner(this);
         }
 
-        // this.toMove(this.state.playerTurn);
-
         this.squareRendered = new SquareRenderer(this.game);
         this.pieceRenderer = new PieceRenderer(this.game);
-
-        this.game.subscribeToView(() => {
-            this.forceUpdate();
-        })
     }
 
     componentDidMount(): void {
+        this.viewSubscription = this.props.game.subscribeToView(() => {
+            this.forceUpdate();
+        });
         this.toMove(this.state.playerTurn);
+    }
+
+    componentWillUnmount(): void {
+        this.viewSubscription?.unsubscribe();
     }
 
     toMove(player: ChessPlayerInterface) {
@@ -158,36 +162,26 @@ export class ChessDisplay extends React.Component<Props, State> {
         let boardNodes = this.buildChessSquares();
 
         return (
-            <PositionView
-                style={styles.chessboard}
-                onTouchMove={(event) => {
-                    this.clickToTile(event.nativeEvent.locationX, event.nativeEvent.locationY);
-                }}
-                onTouchEnd={this.releasedSquare.bind(this)}
-                onTouchStart={(event) => {
-                    this.clickToTile(event.nativeEvent.locationX, event.nativeEvent.locationY);
-                    this.pressSquare();
-                }}
+            <View style={styles.wrapper}>
+                <PositionView
+                    style={styles.chessboard}
+                    onTouchMove={(event) => {
+                        this.clickToTile(event.nativeEvent.locationX, event.nativeEvent.locationY);
+                    }}
+                    onTouchEnd={this.releasedSquare.bind(this)}
+                    onTouchStart={(event) => {
+                        this.clickToTile(event.nativeEvent.locationX, event.nativeEvent.locationY);
+                        this.pressSquare();
+                    }}
 
-                positionFeedback={(pos) => {
-                    this.boardPosition = pos
-                }}>
-                {boardNodes}
-            </PositionView>
+                    positionFeedback={(pos) => {
+                        this.boardPosition = pos
+                    }}>
+                    {boardNodes}
+                </PositionView>
+            </View>
         );
     }
-
-    // private touchMove(event: GestureResponderEvent) {
-    //     for (const player of this.state.players) {
-    //         if (this.state.playerTurn !== player)
-    //             continue;
-    //         if ('touchMoved' in player) {
-    //             (player as HumanPlayerInterface).touchMoved(
-    //                 {x: event.nativeEvent.pageX, y: event.nativeEvent.pageY}
-    //             );
-    //         }
-    //     }
-    // }
 
     private releasedSquare() {
         this.interactSquare(true);
@@ -221,6 +215,9 @@ export class ChessDisplay extends React.Component<Props, State> {
 }
 
 const styles = StyleSheet.create({
+    wrapper: {
+        alignItems: 'center',
+    },
     chessboard: {
         flexDirection: 'row',
     },

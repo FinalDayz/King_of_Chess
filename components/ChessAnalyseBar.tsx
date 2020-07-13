@@ -35,7 +35,7 @@ export class ChessAnalyseBar extends React.Component<Props, State> {
     madeMove(move: Move) {
         this.props.game.getCurrentAnalysis()
             .then(analysis => {
-                if(this._mounted) {
+                if (this._mounted) {
                     this.setState({
                         analysis: analysis
                     });
@@ -58,10 +58,10 @@ export class ChessAnalyseBar extends React.Component<Props, State> {
     centiPawnToPercent(centiPawn: number): number {
         const isNegative = centiPawn < 0;
         centiPawn = Math.abs(centiPawn);
-        let score = 1000-1000/(centiPawn+1000.0)*1000;
-        if(isNegative)
+        let score = 1000 - 1000 / (centiPawn + 1000.0) * 1000;
+        if (isNegative)
             score = -score;
-        return score/10;
+        return score / 10;
     }
 
     render() {
@@ -69,7 +69,7 @@ export class ChessAnalyseBar extends React.Component<Props, State> {
         let whiteAdvantage = 0;
         let whiteCpAdvantage = 0;
         const analysis = this.state.analysis;
-        if(analysis && analysis.cp) {
+        if (analysis && analysis.cp) {
             whiteCpAdvantage = analysis.isWhite ? analysis.cp : -analysis.cp;
             whiteAdvantage = this.centiPawnToPercent(whiteCpAdvantage);
         }
@@ -77,12 +77,19 @@ export class ChessAnalyseBar extends React.Component<Props, State> {
         // console.log("ANALYSE... white advantage " + whiteAdvantage);
         const blackAdvantage = -whiteAdvantage;
         return (
+
             <View style={styles.wrapper}>
-                <View style={[styles.block, styles.white, {flex: (150 - whiteAdvantage)}]}>
-                    <Text>{whiteCpAdvantage/100}</Text>
+                <View style={styles.titleWrapper}>
+                 <Text style={[styles.text, styles.title]}>Advantage White vs Black</Text>
                 </View>
-                <View style={[styles.block, styles.black, {flex: (150 - blackAdvantage)}]}>
-                    <Text style={{color: 'white', textAlign: 'right'}}>{-whiteCpAdvantage/100}</Text>
+                <View style={styles.analyseBar}>
+                    <View style={[styles.block, styles.white, {flex: (150 - whiteAdvantage)}]}>
+                        <Text style={[styles.text]}>{whiteCpAdvantage / 100}</Text>
+                    </View>
+                    <View style={[styles.block, styles.black, {flex: (150 - blackAdvantage)}]}>
+                        <Text
+                            style={[styles.text, {color: 'white', textAlign: 'right'}]}>{-whiteCpAdvantage / 100}</Text>
+                    </View>
                 </View>
             </View>
         );
@@ -90,8 +97,22 @@ export class ChessAnalyseBar extends React.Component<Props, State> {
 }
 
 const styles = StyleSheet.create({
+    titleWrapper: {
+        backgroundColor: 'white',
+    },
+    title: {
+        fontSize: 25,
+        color: 'black'
+    },
+    analyseBar: {
+        flexDirection: 'row'
+    },
+    text: {
+        padding: 5,
+        fontSize: 20,
+    },
     white: {
-        backgroundColor: '#BBB',
+        backgroundColor: '#d9d9d9',
     },
     black: {
         backgroundColor: '#333',
@@ -99,9 +120,9 @@ const styles = StyleSheet.create({
     wrapper: {
         borderColor: '#888',
         borderWidth: 2,
-        flexDirection: 'row'
+
     },
     block: {
-        height: 20,
+        height: 40,
     }
 });

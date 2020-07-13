@@ -3,6 +3,7 @@ import {MainScreen} from "./MainScreen";
 
 import { createAppContainer } from 'react-navigation';
 import {createStackNavigator} from "react-navigation-stack";
+import {AnalysisMode} from "../modes/AnalysisMode";
 
 const MainNavigation = createStackNavigator({
         MainScreen: {
@@ -36,9 +37,9 @@ const MainNavigation = createStackNavigator({
             }
         },
         Analyse: {
-            screen: CompetitiveMode,
+            screen: AnalysisMode,
             navigationOptions: {
-                headerTitle: 'Analyse Mode'
+                headerTitle: 'Analysis Mode'
             }
         },
 

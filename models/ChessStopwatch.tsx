@@ -1,4 +1,6 @@
 export class ChessStopwatch {
+    private readonly startTime: number;
+
     private whiteTimeLeft: number;
     private blackTimeLeft: number;
 
@@ -7,9 +9,18 @@ export class ChessStopwatch {
     private lastUpdate = Date.now();
 
     constructor(timeInMinutes: number) {
-        const timeInMs = timeInMinutes * 60 * 1000   * 0 + 3000;
+        const timeInMs = timeInMinutes * 60 * 1000;
+        this.startTime = timeInMs;
         this.whiteTimeLeft = timeInMs;
         this.blackTimeLeft = timeInMs;
+    }
+
+    getStartTime(): number {
+        return this.startTime
+    }
+
+    formatNumber(n: number):string {
+        return n > 9 ? n.toString() : '0'+n;
     }
 
     isOutOfTime(white?: boolean) {
@@ -47,16 +58,17 @@ export class ChessStopwatch {
         this.started = true;
     }
 
-    getTimeInSec(white: boolean) {
+    getTime(white: boolean): number {
         this.updateTime();
-        let timeLeft;
         if(white) {
-            timeLeft = this.whiteTimeLeft;
+            return this.whiteTimeLeft;
         } else {
-            timeLeft = this.blackTimeLeft;
+            return this.blackTimeLeft;
         }
+    }
 
-        return Math.round(timeLeft/1000.0)
+    getTimeInSec(white: boolean): number {
+        return Math.round(this.getTime(white) / 1000.0)
     }
 
     updateTime() {
@@ -79,7 +91,8 @@ export class ChessStopwatch {
             minutes = Math.floor(seconds / 60.0);
         }
 
-        return minutes.toString() + ":" + (seconds % 60);
+        return this.formatNumber(minutes) + ":" +
+            this.formatNumber(seconds % 60);
 
     }
 

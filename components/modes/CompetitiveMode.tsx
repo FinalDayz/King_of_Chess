@@ -1,5 +1,5 @@
 import React from "react";
-import {Modal, Text, StyleSheet, View, Alert} from "react-native";
+import {Modal, Text, StyleSheet, View, Alert, ImageBackground} from "react-native";
 import {ChessMode} from "../../models/ChessMode";
 import {ModeSettings, SettingsState} from "./initSettings/ModeSettings";
 import {ChessDisplay, DisplaySettings} from "../screens/ChessDisplay";
@@ -81,7 +81,11 @@ export class CompetitiveMode extends React.Component<Props, State> implements Ch
 
     render() {
         return (
+            <ImageBackground
+                source={require('../../assets/backgrounds/woodBackground.jpg')}
+                style={{flex: 1}}>
             <View style={styles.wrapper}>
+
                 {this.state.showSettings ? (null) : (
                     <View>
                         <ChessTimer
@@ -128,7 +132,9 @@ export class CompetitiveMode extends React.Component<Props, State> implements Ch
                         />
                     </Modal>
                 </View>
+
             </View>
+            </ImageBackground>
         );
     }
 

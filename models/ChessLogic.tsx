@@ -1,7 +1,7 @@
 import Chess, {ChessInstance, Move, Piece, PieceType, Square} from 'chess.js';
 import {ChessAnalyser} from "./ChessAnalyser";
 import {Analysis} from "./Analysis";
-import {Observable, Observer, Subscriber, Subscription} from "rxjs";
+import {Observable, Observer, Subject, Subscriber, Subscription} from "rxjs";
 import {ChessStopwatch} from "./ChessStopwatch";
 
 
@@ -18,15 +18,11 @@ export class ChessLogic {
     private currentAnalysisInfo: undefined |
         { fen: string, analysis: Analysis };
 
-    private moveSubscribable: Observable<Move>;
-    private observable?: Subscriber<Move>;
-    private lastMove: Move | undefined;
-
-    private updateDisplay?: Subscriber<null>;
-    private updateDisplayObservable: Observable<null>;
+    private moveObservable: Subject<Move>;
+    private displayObservable: Subject<null>;
 
     private undoHistory: Move[];
-
+    private lastMove: Move | undefined;
     private capturedPieces: Piece[];
 
     public stopwatch: undefined | ChessStopwatch;
@@ -34,27 +30,24 @@ export class ChessLogic {
     constructor() {
         this.game = Chess.Chess();
         this.chessAnalyser = new ChessAnalyser();
-        this.moveSubscribable = new Observable<Move>(subscriber => {
-            this.observable = subscriber;
-        });
-        this.updateDisplayObservable = new Observable<null>(subscriber => {
-            this.updateDisplay = subscriber;
-        });
+
+        this.moveObservable = new Subject<Move>();
+        this.displayObservable = new Subject();
+
         this.undoHistory = [];
         this.capturedPieces = [];
     }
 
     subscribeToMove(moveCallback: (move: Move) => void): Subscription {
-        return this.moveSubscribable.subscribe(moveCallback);
+        return this.moveObservable.subscribe(moveCallback);
     }
 
     subscribeToView(moveCallback: () => void): Subscription {
-
-        return this.updateDisplayObservable.subscribe(moveCallback);
+        return this.displayObservable.subscribe(moveCallback);
     }
 
     private executeCallbacks(move: Move) {
-        this.observable?.next(move);
+        this.moveObservable?.next(move);
     }
 
     getFen() {
@@ -169,7 +162,7 @@ export class ChessLogic {
 
             this.executeCallbacks(madeMove);
             this.lastMove = madeMove;
-            this.updateDisplay?.next();
+            this.displayObservable?.next();
         }
         return madeMove;
     }
@@ -187,7 +180,8 @@ export class ChessLogic {
 
     getMoveFromPositions(moveStr: string): Move | null {
         for (const move of this.getMoves()) {
-            if (moveStr === move.from + move.to) {
+            const promotion = move.promotion? move.promotion : '';
+            if (moveStr === move.from + move.to + promotion) {
                 return move;
             }
         }
@@ -207,7 +201,7 @@ export class ChessLogic {
             }
         }
         this.lastMove = this.getHistory() ? this.getHistory()[this.getHistory().length - 1] : undefined;
-        this.updateDisplay?.next();
+        this.displayObservable?.next();
     }
 
     redo() {

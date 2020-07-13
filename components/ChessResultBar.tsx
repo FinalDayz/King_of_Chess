@@ -3,6 +3,7 @@ import {ChessLogic} from "../models/ChessLogic";
 import {Text, StyleSheet, View, Image} from "react-native";
 import {ChessImages} from "../models/ChessImages";
 import {Piece, PieceType} from "chess.js";
+import {Subscription} from "rxjs";
 
 interface Props {
     game: ChessLogic,
@@ -13,39 +14,45 @@ interface State {
 }
 
 export class ChessResultBar extends React.Component<Props, State>{
-    constructor(props: Props, state: State) {
-        super(props, state);
+    private viewSubscription: Subscription|undefined;
 
-        props.game.subscribeToView(() => {
+    componentDidMount(): void {
+        this.viewSubscription = this.props.game.subscribeToView(() => {
             this.forceUpdate();
         });
+    }
 
+    componentWillUnmount(): void {
+       this.viewSubscription?.unsubscribe();
     }
 
     render() {
         const thisColor = this.props.whiteSide ? 'w' : 'b';
         const capturedPieces: {'w': Array<PieceType>, 'b': Array<PieceType>, } = {'w': [], 'b': []};
         const points = {'w': 0, 'b': 0};
+        const opponentColor = this.props.whiteSide ? 'b' : 'w';
+
         for(const piece of this.props.game.getCapturedPieces()) {
             points[piece.color] += this.props.game.getPiecePoints(piece.type);
             capturedPieces[piece.color].push(piece.type);
         }
 
-        const advantage = points[thisColor];
+        const advantage = points[thisColor] - points[opponentColor];
+
+        const boxStyle = this.props.whiteSide ? styles.whiteBlock : styles.blackBlock;
+        const textStyle = this.props.whiteSide ? styles.whitesText : styles.blacksText;
 
         return (
             <View style={styles.wrapper}>
-                <View style={[styles.block,
-                    this.props.whiteSide ? styles.whiteBlock : styles.blackBlock]}>
-                    <Text style={[styles.text,
-                        this.props.whiteSide ? styles.whitesText : styles.blackBlock]}>
-                        Captured Pieces
+                <View style={[styles.block, boxStyle]}>
+                    <Text style={[styles.text, textStyle]}>
+                        Captured:
                     </Text>
                     {this.renderPieces(
-                        thisColor,
+                        opponentColor,
                         capturedPieces[thisColor]
                     )}
-                    <Text> ({advantage > 0 ? '+' : ''}{advantage})</Text>
+                    <Text style={[styles.text, textStyle]}> ({advantage > 0 ? '+' : ''}{advantage})</Text>
                 </View>
             </View>
         );
@@ -53,13 +60,20 @@ export class ChessResultBar extends React.Component<Props, State>{
 
     renderPieces(color: 'w'|'b', pieceType: PieceType[]) {
         const pieces = [];
+        let index = 0;
+        pieceType.sort(
+            (pieceA: PieceType, pieceB: PieceType) => {
+                return this.props.game.getPiecePoints(pieceA) - this.props.game.getPiecePoints(pieceB);
+            });
+
         for(const piece of pieceType) {
             const pieceString = color + '-' + piece;
             pieces.push(
-                <Image
+                <Image key={index}
                     style={styles.pieceImage}
                     source={ChessImages.chesspieces[pieceString]}/>
                 );
+            index++;
         }
 
         return pieces;
@@ -69,7 +83,7 @@ export class ChessResultBar extends React.Component<Props, State>{
 
 const styles = StyleSheet.create({
     pieceImage: {
-        width: 25,
+        width: 23,
         height: 30,
     },
     whitesText: {
@@ -80,6 +94,7 @@ const styles = StyleSheet.create({
     },
     text: {
        fontSize: 16,
+        paddingLeft: 3,
     },
     blackBlock: {
         justifyContent: 'flex-start',
@@ -87,6 +102,7 @@ const styles = StyleSheet.create({
     },
     whiteBlock: {
         justifyContent: 'flex-start',
+        backgroundColor: 'white',
     },
     block: {
         alignItems: 'center',
