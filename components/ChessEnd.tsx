@@ -1,6 +1,8 @@
-import {ChessLogic} from "../models/ChessLogic";
+import {ChessLogic, ENDGAME} from "../models/ChessLogic";
 import React from "react";
 import {StyleSheet, View, Text, Modal, TouchableWithoutFeedback, Button} from "react-native";
+import {AsyncStorage} from 'react-native';
+import {Move} from "chess.js";
 
 interface Props {
     game: ChessLogic,
@@ -10,6 +12,11 @@ interface Props {
 
 interface State {
     visible: boolean
+}
+
+export interface SavedResult {
+    moves: Move[],
+    result: ENDGAME
 }
 
 export class ChessEnd extends React.Component<Props, State> {
@@ -41,6 +48,7 @@ export class ChessEnd extends React.Component<Props, State> {
     }
 
     render() {
+
         if (!this.props.game.hasEnded()) {
             return null;
         }
@@ -79,12 +87,6 @@ export class ChessEnd extends React.Component<Props, State> {
                 break;
         }
 
-        // if(this.state.visible)
-        //     setTimeout(() => {
-        //         this.setState({
-        //             visible: false
-        //         });
-        //     }, 3000);
 
         return (
             <Modal
