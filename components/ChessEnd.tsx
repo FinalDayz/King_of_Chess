@@ -4,6 +4,8 @@ import {StyleSheet, View, Text, Modal, TouchableWithoutFeedback, Button} from "r
 
 interface Props {
     game: ChessLogic,
+    analyseRoute: boolean,
+    navigation: any
 }
 
 interface State {
@@ -11,9 +13,12 @@ interface State {
 }
 
 export class ChessEnd extends React.Component<Props, State> {
+    static defaultProps = {
+        analyseRoute: false,
+        navigation: false,
+    };
 
     private timer: undefined | number;
-
 
     constructor(props: Props, state: State) {
         super(props, state);
@@ -100,18 +105,33 @@ export class ChessEnd extends React.Component<Props, State> {
                     borderRadius: 20,
                     padding: 10,
                 }}>
-                    <Text style={styles.title}>{title}</Text>
-                    <Text style={styles.content}>{content}</Text>
+                    <View style={{height: 60}}>
+                        <Text style={styles.title}>{title}</Text>
+                        <Text style={styles.content}>{content}</Text>
+                    </View>
                     <View style={{paddingTop: 40, flex: 1}}>
-                    <Button title={'Dismiss'} onPress={() => {
-                        this.setState({
-                            visible: false
-                        });
-                    }}/>
+                        {this.renderAnalyseBtn()}
+                        <Button title={'Dismiss'} onPress={() => {
+                            this.setState({
+                                visible: false
+                            });
+                        }}/>
                     </View>
                 </View>
             </Modal>);
 
+    }
+
+    renderAnalyseBtn() {
+        if(this.props.analyseRoute) {
+            return (<Button title={'Dismiss'} onPress={() => {
+                this.props.navigation.setParams();
+                this.props.navigation.navigate('Analyse');
+            }}/>
+            )
+        } else {
+            return null;
+        }
     }
 }
 
