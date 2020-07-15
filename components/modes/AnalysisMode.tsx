@@ -4,13 +4,12 @@ import React from "react";
 import {ChessMode} from "../../models/ChessMode";
 import {ChessDisplay, DisplaySettings} from "../screens/ChessDisplay";
 import {TouchscreenPlayer} from "../../models/chessPlayers/TouchscreenPlayer";
-import {AsyncStorage, ImageBackground, StyleSheet, View} from "react-native";
-import {ChessTimer} from "../ChessTimer";
+import {ImageBackground, StyleSheet, View} from "react-native";
 import {ChessResultBar} from "../ChessResultBar";
 import {ChessEnd, SavedResult} from "../ChessEnd";
 import {ChessAnalyseBar} from "../ChessAnalyseBar";
 import {ChessControlPanel} from "../ChessControlPanel";
-import {NavigationParams, NavigationScreenProp, NavigationState} from "react-navigation";
+import {NavigationScreenProp, NavigationState} from "react-navigation";
 
 interface Props {
     navigation: NavigationScreenProp<NavigationState>
@@ -45,18 +44,16 @@ export class AnalysisMode extends React.Component<Props, State> implements Chess
         };
     }
 
+
     componentDidMount() {
-        console.log("navigation "+this.props.navigation.getParam('moveHistory'));
         this.startMode();
-        AsyncStorage.getItem('games')
-            .then(result => {
-                const games = (result ? JSON.parse(result) : [] as SavedResult[]);
-                console.log("games::" , games[0]);
-            });
     }
 
     startMode(): void {
+        const lastResult : SavedResult = this.props.navigation.getParam('lastResult');
 
+        if(lastResult)
+            this.state.game.loadFromMoves(lastResult.moves);
     }
 
     render() {
@@ -66,7 +63,7 @@ export class AnalysisMode extends React.Component<Props, State> implements Chess
                 style={{flex: 1}}>
                 <View style={styles.wrapper}>
 
-                    {this.state.showSettings ? (null) : (
+                    {this.state.showSettings ? null : (
                         <View>
 
                             <ChessAnalyseBar game={this.state.game}/>
@@ -101,14 +98,6 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         paddingTop: 22
-        // marginTop: 300,
-
-        // marginHorizontal: '5%',
-        // marginVertical: '10%',
-        // width: '90%',
-        // height: '100%',
-        // elevation: 10,
-        // backgroundColor: 'magenta',
     },
     wrapper: {
         flex: 1,

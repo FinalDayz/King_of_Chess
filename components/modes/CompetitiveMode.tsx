@@ -13,7 +13,7 @@ import {ChessEnd} from "../ChessEnd";
 import {AnalysisNavigator} from "../AnalysisNavigator";
 
 interface Props {
-
+    navigation: any
 }
 
 interface State {
@@ -53,7 +53,6 @@ export class CompetitiveMode extends React.Component<Props, State> implements Ch
         const game = this.state.game;
         let whitePlayer, blackPlayer;
 
-        console.log(settings.againstAI);
 
         const player = new TouchscreenPlayer(game);
         const opponent = settings.againstAI ?
@@ -109,7 +108,8 @@ export class CompetitiveMode extends React.Component<Props, State> implements Ch
                                 whiteSide={this.displaySettings.whiteDown}/>
 
                             <ChessEnd
-                                saveMatch={true}
+                                navigation={this.props.navigation}
+                                analyseRoute={true}
                                 game={this.state.game}/>
 
                             {/*<AnalysisNavigator*/}

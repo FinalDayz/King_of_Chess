@@ -32,7 +32,7 @@ export class ChessControlPanel extends React.Component<Props, State> {
                                   onPress={() => this.props.game.redo()}>
                     <Text style={styles.controlButton}>{'>'}</Text>
                 </TouchableOpacity>
-
+                {this.props.children}
             </View>
         );
     }

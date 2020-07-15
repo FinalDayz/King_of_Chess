@@ -38,6 +38,16 @@ export class ChessLogic {
         this.capturedPieces = [];
     }
 
+    setFen(fen: string) {
+        this.game.load(fen);
+    }
+
+    loadFromMoves(moves: Move[]) {
+        for(const move of moves) {
+            this.game.move(move);
+        }
+    }
+
     subscribeToMove(moveCallback: (move: Move) => void): Subscription {
         return this.moveObservable.subscribe(moveCallback);
     }
@@ -205,7 +215,6 @@ export class ChessLogic {
     }
 
     redo() {
-        console.log(this.undoHistory);
         const redoMove = this.undoHistory.pop();
         if (redoMove) {
             this.makeMove(redoMove, false);

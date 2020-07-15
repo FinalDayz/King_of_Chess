@@ -5,7 +5,7 @@ import MainNavigation from "./components/navigation/MainNavigation";
 
 
 export default function App() {
-  // console.disableYellowBox = true;
+  console.disableYellowBox = true;
   return (
 
       <MainNavigation/>

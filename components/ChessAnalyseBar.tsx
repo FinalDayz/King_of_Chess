@@ -72,7 +72,7 @@ export class ChessAnalyseBar extends React.Component<Props, State> {
         const analysis = this.state.analysis;
         if (analysis && analysis.cp) {
             whiteCpAdvantage = analysis.isWhite ? analysis.cp : -analysis.cp;
-            whiteAdvantage = this.centiPawnToPercent(whiteCpAdvantage);
+            whiteAdvantage = -this.centiPawnToPercent(whiteCpAdvantage);
         }
 
         let mate = undefined;
@@ -80,6 +80,8 @@ export class ChessAnalyseBar extends React.Component<Props, State> {
         if(analysis?.mate) {
             mate = "Mate in "+analysis.mate;
             whiteAdvantage = analysis.isWhite ? -150 : 150;
+            if(analysis?.mate < 0)
+                whiteAdvantage = -whiteAdvantage;
         }
 
 

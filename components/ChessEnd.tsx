@@ -107,11 +107,11 @@ export class ChessEnd extends React.Component<Props, State> {
                     borderRadius: 20,
                     padding: 10,
                 }}>
-                    <View style={{height: 60}}>
+                    <View style={{height: 75}}>
                         <Text style={styles.title}>{title}</Text>
                         <Text style={styles.content}>{content}</Text>
                     </View>
-                    <View style={{paddingTop: 40, flex: 1}}>
+                    <View style={{paddingTop: 20, flex: 1, flexDirection: 'row'}}>
                         {this.renderAnalyseBtn()}
                         <Button title={'Dismiss'} onPress={() => {
                             this.setState({
@@ -120,16 +120,23 @@ export class ChessEnd extends React.Component<Props, State> {
                         }}/>
                     </View>
                 </View>
-            </Modal>);
-
+            </Modal>
+        );
     }
 
     renderAnalyseBtn() {
-        if(this.props.analyseRoute) {
-            return (<Button title={'Dismiss'} onPress={() => {
-                this.props.navigation.setParams();
-                this.props.navigation.navigate('Analyse');
-            }}/>
+        if (this.props.analyseRoute) {
+            return (<Button title={'Analyse'} onPress={() => {
+                    this.props.navigation.navigate('Analyse', {
+                        lastResult: {
+                            moves: this.props.game.getHistory(),
+                            result: this.props.game.getEndedResult()
+                        }
+                    });
+                    this.setState({
+                        visible: false
+                    });
+                }}/>
             )
         } else {
             return null;

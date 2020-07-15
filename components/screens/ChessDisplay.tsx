@@ -97,6 +97,9 @@ export class ChessDisplay extends React.Component<Props, State> {
                 this.toMove(this.state.whitePlayer === player ?
                     this.state.blackPlayer : this.state.whitePlayer
                 );
+            })
+            .catch(err => {
+
             });
     }
 

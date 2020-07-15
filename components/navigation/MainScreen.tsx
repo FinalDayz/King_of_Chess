@@ -1,5 +1,5 @@
 import React from "react";
-import {Text, Button, ImageBackground, View, Image, StyleSheet, TouchableOpacity} from "react-native";
+import {Text, Button, ImageBackground, View, Image, StyleSheet, TouchableOpacity, Platform} from "react-native";
 // @ts-ignore
 import {NavigationParams, NavigationScreenProp, NavigationState} from "react-navigation";
 
@@ -37,21 +37,21 @@ export class MainScreen extends React.Component<Props, {}> {
                                 this.props.navigation.navigate('Competitive');
                             }}>
                             <Image
-                                source={require('../../assets/button/Puzzle_mode_btn.png')}
+                                source={require('../../assets/button/Competitive_mode_btn.png')}
                                 style={styles.buttonImage}/>
                         </TouchableOpacity>
 
-                        <TouchableOpacity
-                            activeOpacity={0.5}
-                            onPress={() => {
-                                this.props.navigation.navigate('Competitive');
-                            }}>
-                            <Image
-                                source={require('../../assets/button/Practice_mode_btn.png')}
-                                style={styles.buttonImage}/>
-                        </TouchableOpacity>
+                        {/*<TouchableOpacity*/}
+                        {/*    activeOpacity={0.5}*/}
+                        {/*    onPress={() => {*/}
+                        {/*        this.props.navigation.navigate('Competitive');*/}
+                        {/*    }}>*/}
+                        {/*    <Image*/}
+                        {/*        source={require('../../assets/button/Practice_mode_btn.png')}*/}
+                        {/*        style={styles.buttonImage}/>*/}
+                        {/*</TouchableOpacity>*/}
                     </View>
-                    <View style={styles.rowWrapper}>
+                    <View style={Platform.OS == 'ios' ? styles.columnWrapper : styles.rowWrapper}>
                         <TouchableOpacity
                             activeOpacity={0.5}
                             onPress={() => {
@@ -65,10 +65,10 @@ export class MainScreen extends React.Component<Props, {}> {
                         <TouchableOpacity
                             activeOpacity={0.5}
                             onPress={() => {
-                                this.props.navigation.navigate('Competitive');
+                                this.props.navigation.navigate('Puzzle');
                             }}>
                             <Image
-                                source={require('../../assets/button/Competitive_mode_btn.png')}
+                                source={require('../../assets/button/Puzzle_mode_btn.png')}
                                 style={styles.buttonImage}/>
                         </TouchableOpacity>
                     </View>
@@ -81,6 +81,9 @@ export class MainScreen extends React.Component<Props, {}> {
 const styles = StyleSheet.create({
     rowWrapper: {
         flexDirection: 'row',
+    },
+    columnWrapper: {
+      flexDirection: 'column'
     },
     background: {
         flex: 1,

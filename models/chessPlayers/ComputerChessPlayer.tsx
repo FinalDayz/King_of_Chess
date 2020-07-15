@@ -28,8 +28,10 @@ export class ComputerChessPlayer implements ChessPlayerInterface {
             game.chessAnalyser.analysePosition(this.game, this.difficulty)
                 .then(result => {
                     const move = this.game.getMoveFromPositions(result.bestMove);
-                    if(this.game.hasEnded())
+                    if(this.game.hasEnded()) {
                         reject();
+                        return;
+                    }
 
                     if(move)
                         this.moveCallback(move);

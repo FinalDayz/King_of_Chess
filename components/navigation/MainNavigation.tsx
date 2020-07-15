@@ -4,6 +4,7 @@ import {MainScreen} from "./MainScreen";
 import { createAppContainer } from 'react-navigation';
 import {createStackNavigator} from "react-navigation-stack";
 import {AnalysisMode} from "../modes/AnalysisMode";
+import {PuzzleMode} from "../modes/PuzzleMode";
 
 const MainNavigation = createStackNavigator({
         MainScreen: {
@@ -19,7 +20,7 @@ const MainNavigation = createStackNavigator({
             }
         },
         Puzzle: {
-            screen: CompetitiveMode,
+            screen: PuzzleMode,
             navigationOptions: {
                 headerTitle: 'Puzzle Mode'
             }
